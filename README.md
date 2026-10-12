@@ -1,11 +1,5 @@
-# Senior Product Engineer
+# From Architecture to Production
 
-I build full-stack products and DeFi systems, from requirements and architecture to production. 8+ years in software engineering, with a focus on turning complex integrations into reliable, usable products.
+**8+ years building software**, with production experience across DeFi applications, wallet infrastructure, identity systems, and developer SDKs. I connect product thinking with hands-on engineering, taking complex requirements through architecture, implementation, and launch.
 
-My experience spans staking applications, wallet infrastructure, account abstraction, identity systems, and developer SDKs. I work across the stack, connecting product requirements with the technical decisions behind them.
-
-I use AI-assisted workflows to accelerate development, with engineering judgment and validation at every step. Currently expanding into AI automation and agentic workflows.
-
-**Core stack:** TypeScript · React · Node.js
-
-**Open to engineering roles and product collaborations.**
+*AI-assisted engineering in practice. AI automation and agentic workflows in exploration.*
