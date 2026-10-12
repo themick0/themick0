@@ -1,4 +1,4 @@
-# From Architecture to Production
+# From Architecture to Production 🚀
 
 **8+ years building software** with production experience across DeFi applications, wallet infrastructure, identity systems and developer SDKs. I connect product thinking with hands-on engineering, taking complex requirements through architecture, implementation and launch.
 
