@@ -1,4 +1,4 @@
-# Product Development & DeFi Solutions & AI Automation
+# Product Engineering · DeFi · AI Automation
 
 I help founders and product teams turn complex business needs into **production-ready software** — shaping the solution, designing the architecture, and owning delivery from concept to launch.
 
