@@ -1,5 +1,9 @@
-# From Architecture to Production 
+# DeFi Solutions & AI Automation
 
-**8+ years building software** with production experience across DeFi applications, wallet infrastructure, identity systems and developer SDKs. I connect product thinking with hands-on engineering, taking complex requirements through architecture, implementation and launch.
+I help founders and product teams turn complex business needs into **production-ready software** — shaping the solution, designing the architecture, and owning delivery from concept to launch.
 
-*AI-assisted engineering in practice. AI automation and agentic workflows in exploration.*
+With **8+ years in software engineering**, I combine deep experience in DeFi and full-stack development with AI-assisted engineering to build reliable products and accelerate delivery.
+
+*Extending that foundation into AI automation and intelligent workflows.*
+
+[Email](mailto:pamiheevcorp@gmail.com) · [LinkedIn](https://www.linkedin.com/in/tenshou) · [Telegram](https://t.me/peter_mikheev)
