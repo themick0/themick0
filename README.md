@@ -6,4 +6,4 @@ With **8+ years in software engineering**, I combine deep experience in DeFi and
 
 *Extending that foundation into AI automation and intelligent workflows.*
 
-[Email](mailto:pamiheevcorp@gmail.com) · [LinkedIn](https://www.linkedin.com/in/tenshou) · [Telegram](https://t.me/peter_mikheev)
+[pamiheevcorp@gmail.com](mailto:pamiheevcorp@gmail.com) · [LinkedIn](https://www.linkedin.com/in/tenshou) · [Telegram](https://t.me/peter_mikheev)
