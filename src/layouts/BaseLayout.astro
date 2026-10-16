@@ -1,0 +1,28 @@
+---
+import Seo from '../components/Seo.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+interface Props {
+  title: string;
+  description: string;
+  projectName?: string;
+  noindex?: boolean;
+  casePage?: boolean;
+  skipTo?: string;
+}
+const { casePage = false, skipTo = '#main', ...seo } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo {...seo} />
+  </head>
+  <body id="top" class:list={{ 'case-page': casePage }}>
+    <a class="skip-link" href={skipTo}>Skip to content</a>
+    <slot />
+    <Footer />
+  </body>
+</html>

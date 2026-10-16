@@ -1,0 +1,139 @@
+---
+import { profile } from '../data/profile';
+import { indexable } from '../../site.config.mjs';
+import { pathTo } from '../lib/paths';
+
+interface Props {
+  title: string;
+  description: string;
+  projectName?: string;
+  noindex?: boolean;
+}
+const { title, description, projectName, noindex = false } = Astro.props;
+const canIndex = import.meta.env.PROD && indexable && !noindex;
+const canonical =
+  Astro.site && !noindex
+    ? new URL(Astro.url.pathname, Astro.site).href
+    : undefined;
+const home = Astro.site ? new URL(pathTo(), Astro.site).href : undefined;
+const image = Astro.site
+  ? new URL(pathTo('social-preview.png'), Astro.site).href
+  : undefined;
+const structuredData =
+  home && canonical
+    ? {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'Person',
+            '@id': `${home}#person`,
+            name: profile.name,
+            alternateName: profile.handle,
+            jobTitle: profile.role,
+            url: home,
+            sameAs: profile.socials.map(({ href }) => href),
+          },
+          {
+            '@type': 'WebSite',
+            '@id': `${home}#website`,
+            url: home,
+            name: `${profile.name} — ${profile.role}`,
+            inLanguage: 'en',
+            publisher: { '@id': `${home}#person` },
+          },
+          {
+            '@type': 'WebPage',
+            '@id': `${canonical}#webpage`,
+            url: canonical,
+            name: title,
+            description,
+            inLanguage: 'en',
+            isPartOf: { '@id': `${home}#website` },
+            about: { '@id': `${home}#person` },
+            author: { '@id': `${home}#person` },
+            ...(projectName
+              ? { breadcrumb: { '@id': `${canonical}#breadcrumb` } }
+              : {}),
+          },
+          ...(projectName
+            ? [
+                {
+                  '@type': 'BreadcrumbList',
+                  '@id': `${canonical}#breadcrumb`,
+                  itemListElement: [
+                    {
+                      '@type': 'ListItem',
+                      position: 1,
+                      name: 'Home',
+                      item: home,
+                    },
+                    {
+                      '@type': 'ListItem',
+                      position: 2,
+                      name: projectName,
+                      item: canonical,
+                    },
+                  ],
+                },
+              ]
+            : []),
+        ],
+      }
+    : undefined;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="author" content={profile.name} />
+<meta
+  name="robots"
+  content={canIndex
+    ? 'index, follow, max-image-preview:large'
+    : 'noindex, nofollow'}
+/>
+<meta name="theme-color" content="#05070d" />
+{canonical && <link rel="canonical" href={canonical} />}
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:site_name" content={profile.name} />
+<meta property="og:locale" content="en_US" />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{
+  image && (
+    <>
+      <meta property="og:image" content={image} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta
+        property="og:image:alt"
+        content={`${profile.name} — ${profile.role}. ${profile.expertise.join(' · ')}.`}
+      />
+      <meta name="twitter:image" content={image} />
+      <meta
+        name="twitter:image:alt"
+        content={`${profile.name} — ${profile.role}`}
+      />
+    </>
+  )
+}
+<link rel="icon" type="image/svg+xml" href={pathTo('favicon.svg')} />
+<link rel="icon" type="image/png" sizes="48x48" href={pathTo('favicon.png')} />
+<link
+  rel="apple-touch-icon"
+  sizes="180x180"
+  href={pathTo('apple-touch-icon.png')}
+/>
+{canIndex && <link rel="sitemap" href={pathTo('sitemap-index.xml')} />}
+{
+  structuredData && (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')}
+    />
+  )
+}

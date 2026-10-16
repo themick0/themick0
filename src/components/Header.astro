@@ -1,0 +1,125 @@
+---
+import { profile } from '../data/profile';
+import { pathTo } from '../lib/paths';
+interface Props {
+  home?: boolean;
+}
+const { home = false } = Astro.props;
+---
+
+<header class:list={['site-header', 'wrap', { 'case-header': !home }]}>
+  <a class="brand" href={home ? '#top' : pathTo()}>
+    <span class="brand-star" aria-hidden="true">✳</span>
+    <span class="brand-name"
+      >{profile.name}<span class="handle">{profile.handle}</span></span
+    >
+  </a>
+  <nav aria-label="Main navigation">
+    <a href={home ? '#work' : pathTo('#work')}>Projects</a>
+    <a href={home ? '#contact' : pathTo('#contact')}>Contact</a>
+  </nav>
+</header>
+<style>
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+    min-height: 108px;
+    padding-block: 18px;
+  }
+  .case-header {
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 44px;
+    padding-block: 10px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .brand-star {
+    font-size: 2rem;
+    line-height: 1;
+    color: #d3e6fa;
+  }
+  .brand-name {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .handle {
+    color: var(--muted);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.25rem;
+  }
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 0.8125rem;
+    text-decoration: none;
+    transition: color 160ms ease-out;
+  }
+  @media (hover: hover) {
+    nav a:hover {
+      color: var(--accent);
+    }
+  }
+  @media (max-width: 1023px) {
+    .site-header {
+      min-height: 96px;
+    }
+  }
+  @media (max-width: 767px) {
+    .site-header {
+      min-height: 86px;
+      gap: 8px;
+      padding-block: 12px;
+    }
+    .brand {
+      gap: 10px;
+      font-size: 0.8125rem;
+    }
+    .brand-star {
+      font-size: 1.5625rem;
+    }
+    .handle {
+      font-size: 0.625rem;
+    }
+    nav {
+      gap: 18px;
+    }
+    nav a {
+      font-size: 0.75rem;
+    }
+  }
+  @media (max-width: 359px) {
+    .brand-star {
+      display: none;
+    }
+  }
+  @media (max-height: 650px) and (min-width: 768px) {
+    .site-header {
+      min-height: 72px;
+      padding-block: 12px;
+    }
+  }
+  @media print {
+    nav {
+      display: none;
+    }
+  }
+</style>

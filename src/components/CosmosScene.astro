@@ -1,0 +1,273 @@
+<div class="cosmos-scene" aria-hidden="true">
+  <div class="space-cloud"></div>
+  <div class="static-stars"></div>
+  <canvas class="starfield"></canvas>
+  <div class="orbital-system">
+    <div class="orbit orbit-one"></div>
+    <div class="orbit orbit-two"></div>
+    <div class="planet-halo"></div>
+    <div class="planet"></div>
+  </div>
+  <div class="static-comet"></div>
+  <canvas class="meteorfield"></canvas>
+  <div class="scene-shade"></div>
+  <div class="space-grain"></div>
+</div>
+<style>
+  /* The scene is decorative and never intercepts reading, scrolling or links. */
+  .cosmos-scene {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .space-cloud {
+    position: absolute;
+    inset: -15%;
+    background:
+      radial-gradient(
+        ellipse at 76% 42%,
+        #29397455 0,
+        #171f4333 24%,
+        transparent 52%
+      ),
+      radial-gradient(ellipse at 89% 14%, #7b66822b, transparent 35%),
+      radial-gradient(ellipse at 64% 84%, #235e7c22, transparent 45%);
+    transform: translate(
+      calc(var(--space-x, 0) * -20px),
+      calc(var(--space-y, 0) * -14px)
+    );
+  }
+  .static-stars {
+    position: absolute;
+    inset: 0;
+    opacity: 0.65;
+    background-image:
+      radial-gradient(1px 1px at 22px 50px, #fff 80%, transparent),
+      radial-gradient(1px 1px at 73px 119px, #90acd6 80%, transparent),
+      radial-gradient(1.5px 1.5px at 211px 33px, #cae6ff 80%, transparent),
+      radial-gradient(1px 1px at 157px 203px, #fff 80%, transparent);
+    background-size:
+      347px 293px,
+      419px 371px,
+      601px 431px,
+      271px 461px;
+  }
+  .starfield,
+  .meteorfield {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .scene-shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, #05070d94, #05070d48 40%, transparent 70%),
+      linear-gradient(0deg, #05070d 0%, #05070d88 9%, transparent 32%);
+  }
+  .space-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.034;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.83' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.8' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+  }
+  .orbital-system {
+    position: absolute;
+    width: min(54vw, 830px);
+    aspect-ratio: 1;
+    top: 11%;
+    left: 58%;
+    transform: translate(
+        calc(var(--space-x, 0) * -42px),
+        calc(var(--space-y, 0) * -30px)
+      )
+      rotate(calc(-28deg + var(--space-bank, 0deg)));
+  }
+  .planet {
+    position: absolute;
+    width: 69%;
+    aspect-ratio: 1;
+    left: 17%;
+    top: 16%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 31% 22%,
+      #131d34,
+      #080d1b 41%,
+      #03050b 69%
+    );
+    box-shadow:
+      -2px -2px 2px #d5eaffb3,
+      -7px -7px 22px #699bf359,
+      inset 10px 12px 30px #5f85bd22,
+      20px 25px 60px #0008;
+  }
+  .planet::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      145deg,
+      #e6f4ff8c,
+      #7394ba22 20%,
+      transparent 36%
+    );
+    mask-image: radial-gradient(circle, transparent 68%, #000 70%);
+  }
+  .planet::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: repeating-radial-gradient(
+      ellipse at 32% 10%,
+      transparent 0 13px,
+      #59708d07 15px 18px,
+      transparent 21px 24px
+    );
+  }
+  .planet-halo {
+    position: absolute;
+    inset: 4%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      transparent 38%,
+      #7099dd0d 50%,
+      transparent 67%
+    );
+  }
+  .orbit {
+    position: absolute;
+    inset: 23% -19%;
+    border: 1px solid #90bdf02b;
+    border-radius: 50%;
+    transform: rotate(0deg);
+  }
+  .orbit::after {
+    content: '';
+    position: absolute;
+    left: 24%;
+    top: 2%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #d0edff;
+    box-shadow: 0 0 14px #b3dcff;
+  }
+  .orbit-two {
+    inset: 18% -29%;
+    opacity: 0.38;
+  }
+  .orbit-two::after {
+    left: auto;
+    right: 17%;
+    top: 8%;
+    width: 2px;
+    height: 2px;
+  }
+  .static-comet {
+    position: absolute;
+    right: 4%;
+    top: 21%;
+    width: 42%;
+    height: 2px;
+    transform: rotate(-35deg);
+    transform-origin: left center;
+    background: linear-gradient(
+      90deg,
+      #d7f4ff,
+      #80b7f982 13%,
+      #c4a3e33b 45%,
+      transparent
+    );
+    box-shadow: 0 0 16px #8fc7ff66;
+  }
+  .static-comet::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+      0 0 15px 4px #a6d8ffa1,
+      0 0 70px 16px #6483e14d;
+  }
+  .scene-ready .static-stars,
+  .scene-ready .static-comet {
+    opacity: 0;
+  }
+
+  @keyframes orbit-arrival {
+    from {
+      opacity: 0.25;
+      scale: 1.14;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.is-entering) .orbital-system {
+      animation: orbit-arrival 3.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+  }
+  @media (min-width: 1600px) {
+    .orbital-system {
+      left: 55%;
+    }
+  }
+  @media (max-width: 1023px) {
+    .orbital-system {
+      width: 80vw;
+      left: 53%;
+      top: 14%;
+    }
+  }
+  @media (max-width: 767px) {
+    .orbital-system {
+      width: 112vw;
+      left: 35%;
+      top: 8%;
+      opacity: 0.85;
+    }
+    .space-cloud {
+      background: radial-gradient(
+        ellipse at 90% 26%,
+        #405a9d4a,
+        transparent 55%
+      );
+    }
+    .scene-shade {
+      background:
+        linear-gradient(90deg, #05070d66, #05070d22 70%),
+        linear-gradient(0deg, #05070d, transparent 85%);
+    }
+    .static-comet {
+      top: 25%;
+      right: -3%;
+      width: 60%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orbital-system {
+      transform: rotate(-28deg);
+    }
+    .space-cloud {
+      transform: none;
+    }
+  }
+  @media (forced-colors: active), print {
+    .cosmos-scene {
+      display: none;
+    }
+  }
+</style>

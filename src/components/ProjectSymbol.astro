@@ -1,0 +1,109 @@
+---
+import type { Project } from '../data/projects';
+interface Props {
+  symbol: Project['symbol'];
+}
+const { symbol } = Astro.props;
+---
+
+<span class:list={['project-symbol', symbol]} aria-hidden="true">
+  <svg viewBox="0 0 100 100" fill="none">
+    {
+      symbol === 'atom' ? (
+        <>
+          <circle cx="50" cy="50" r="30" />
+          <ellipse
+            cx="50"
+            cy="50"
+            rx="13"
+            ry="39"
+            transform="rotate(45 50 50)"
+          />
+          <ellipse
+            cx="50"
+            cy="50"
+            rx="13"
+            ry="39"
+            transform="rotate(-45 50 50)"
+          />
+          <circle class="symbol-core" cx="50" cy="50" r="4" />
+        </>
+      ) : (
+        <>
+          <circle cx="50" cy="50" r="23" />
+          <ellipse
+            cx="50"
+            cy="50"
+            rx="44"
+            ry="13"
+            transform="rotate(-25 50 50)"
+          />
+          <ellipse
+            cx="50"
+            cy="50"
+            rx="37"
+            ry="8"
+            transform="rotate(-25 50 50)"
+          />
+          <circle class="symbol-core" cx="79" cy="29" r="3" />
+        </>
+      )
+    }
+  </svg>
+</span>
+<style>
+  .project-symbol {
+    display: grid;
+    place-items: center;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #719ad313, transparent 72%);
+  }
+  svg {
+    width: 90%;
+    height: 90%;
+    stroke: #9fbed9;
+    stroke-width: 0.65;
+    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .symbol-core {
+    fill: #c1e3ff;
+    stroke: none;
+  }
+  .orbit svg {
+    stroke: #b7a8db;
+  }
+  .orbit .symbol-core {
+    fill: #e0caff;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    :global(.project-link:hover) svg {
+      transform: rotate(24deg);
+    }
+  }
+  @media (max-width: 1023px) {
+    .project-symbol {
+      width: 68px;
+      height: 68px;
+    }
+  }
+  @media (max-width: 767px) {
+    .project-symbol {
+      width: 50px;
+      height: 50px;
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+  @media (max-width: 359px) {
+    .project-symbol {
+      display: none;
+    }
+  }
+  @media print {
+    .project-symbol {
+      display: none;
+    }
+  }
+</style>

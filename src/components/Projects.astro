@@ -1,0 +1,224 @@
+---
+import { projects } from '../data/projects';
+import { pathTo } from '../lib/paths';
+import ProjectSymbol from './ProjectSymbol.astro';
+---
+
+<section class="work" id="work" aria-labelledby="work-title">
+  <h2 class="section-heading" id="work-title">Projects</h2>
+  <ul class="project-list" role="list">
+    {
+      projects.map((project) => (
+        <li id={`project-${project.slug}`}>
+          <a class="project-link" href={pathTo(`projects/${project.slug}/`)}>
+            <ProjectSymbol symbol={project.symbol} />
+            <div class="project-heading">
+              <h3 id={`${project.slug}-title`}>{project.name}</h3>
+              <p class="project-context" id={`${project.slug}-context`}>
+                {project.context}
+              </p>
+            </div>
+            <p class="project-summary" id={`${project.slug}-summary`}>
+              {project.summary}
+            </p>
+            <span class="project-arrow" aria-hidden="true">
+              <span class="arrow">↗</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+<script>
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  document
+    .querySelectorAll<HTMLAnchorElement>('.project-link')
+    .forEach((link) => {
+      link.addEventListener(
+        'pointermove',
+        (event) => {
+          if (reduced.matches || event.pointerType !== 'mouse') return;
+          const box = link.getBoundingClientRect();
+          link.style.setProperty('--row-x', `${event.clientX - box.left}px`);
+          link.style.setProperty('--row-y', `${event.clientY - box.top}px`);
+        },
+        { passive: true },
+      );
+    });
+</script>
+<style>
+  .work {
+    padding-block: 64px 24px;
+  }
+  .section-heading {
+    margin-bottom: 30px;
+  }
+  .project-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid #334057;
+  }
+  .project-list li {
+    border-bottom: 1px solid #273143;
+  }
+  .project-link {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1.15fr) minmax(0, 1fr) 52px;
+    min-height: 184px;
+    gap: 32px;
+    align-items: center;
+    padding: 32px 8px;
+    text-decoration: none;
+    transition: background-color 160ms ease-out;
+  }
+  .project-link::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: radial-gradient(
+      500px circle at var(--row-x, 60%) var(--row-y, 50%),
+      #84b8f71a,
+      transparent 75%
+    );
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+  .project-link:focus-visible::before {
+    opacity: 1;
+  }
+  .project-heading {
+    min-width: 0;
+  }
+  h3 {
+    font-size: clamp(1.75rem, 3.2vw, 2.875rem);
+    font-weight: 400;
+    letter-spacing: -0.05em;
+    transition:
+      color 200ms ease,
+      transform 300ms ease;
+  }
+  .project-context {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  .project-summary {
+    max-width: 33ch;
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+  .project-arrow {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    background: #b0caff03;
+    border: 1px solid #586b854d;
+    border-radius: 50%;
+    color: var(--accent);
+    font-size: 1.5rem;
+  }
+  .project-link:focus-visible {
+    background: var(--surface);
+  }
+  .project-link:focus-visible h3 {
+    color: var(--accent);
+  }
+  @media (hover: hover) {
+    .project-link:hover::before {
+      opacity: 1;
+    }
+    .project-link:hover h3 {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+    .project-link:hover .project-arrow {
+      border-color: var(--accent);
+      background: var(--spectrum);
+      color: var(--bg);
+    }
+    .project-link:hover .arrow {
+      transform: translate(3px, -3px);
+    }
+  }
+  @media (max-width: 1023px) {
+    .project-link {
+      grid-template-columns: 70px minmax(0, 1.3fr) minmax(0, 1fr) 44px;
+      gap: 20px;
+    }
+    .project-summary {
+      font-size: 0.8125rem;
+    }
+  }
+  @media (max-width: 767px) {
+    .work {
+      padding-block: 32px 12px;
+    }
+    .project-link {
+      grid-template-columns: 52px minmax(0, 1fr) 36px;
+      min-height: 0;
+      padding: 28px 0;
+      gap: 16px;
+    }
+    .project-heading {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    h3 {
+      font-size: 1.6875rem;
+    }
+    .project-context {
+      font-size: 0.6875rem;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .project-summary {
+      grid-column: 2 / 4;
+      grid-row: 2;
+      font-size: 0.8125rem;
+    }
+    .project-arrow {
+      grid-column: 3;
+      grid-row: 1;
+      width: 34px;
+      height: 34px;
+      font-size: 1.125rem;
+    }
+  }
+  @media (max-width: 359px) {
+    .project-link {
+      grid-template-columns: minmax(0, 1fr) 34px;
+    }
+    .project-heading {
+      grid-column: 1;
+    }
+    .project-summary {
+      grid-column: 1 / 3;
+    }
+    .project-arrow {
+      grid-column: 2;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .project-link:hover h3 {
+      transform: none;
+    }
+  }
+  @media print {
+    li {
+      break-inside: avoid;
+    }
+    .project-link {
+      display: block;
+    }
+    .project-arrow {
+      display: none;
+    }
+  }
+</style>

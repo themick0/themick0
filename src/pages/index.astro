@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Projects from '../components/Projects.astro';
+import Contact from '../components/Contact.astro';
+import { profile } from '../data/profile';
+---
+
+<BaseLayout
+  title={`${profile.name} — ${profile.role}`}
+  description={profile.description}
+  skipTo="#hero"
+>
+  <div class="home">
+    <Header home />
+    <main id="main" tabindex="-1">
+      <Hero />
+      <div class="wrap">
+        <About />
+        <Projects />
+        <Contact />
+      </div>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Share header, hero, actions, and content rows while keeping the banner outside main. */
+  .home {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+  }
+  /* The opening spans three rows and fills the viewport even with short copy. */
+  .home::before {
+    content: '';
+    grid-area: 1 / 1 / 4;
+    min-height: 100svh;
+    pointer-events: none;
+  }
+  .home > :global(.site-header) {
+    grid-area: 1 / 1;
+    z-index: 1;
+  }
+  main {
+    display: grid;
+    grid-area: 1 / 1 / 5;
+    grid-template-rows: subgrid;
+    min-width: 0;
+  }
+  @media print {
+    .home::before {
+      min-height: 0;
+    }
+  }
+</style>

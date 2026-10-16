@@ -1,0 +1,147 @@
+---
+import { profile } from '../data/profile';
+---
+
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <h2 class="iridescent" id="contact-title">Let’s talk.</h2>
+  <div class="contact-channels">
+    <a class="email-link" href={`mailto:${profile.email}`}
+      ><span>{profile.email}</span><span class="arrow" aria-hidden="true"
+        >↗</span
+      ></a
+    >
+    <nav class="socials" aria-label="Contact profiles">
+      {
+        profile.socials.map(({ label, href }) => (
+          <a class="link" href={href} rel="me">
+            {label}{' '}
+            <span class="arrow" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</section>
+<style>
+  .contact {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 72px;
+    padding-block: 92px 84px;
+  }
+  .contact::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0 -4%;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at 65% 100%,
+      #2030533b,
+      transparent 65%
+    );
+  }
+  .contact-channels {
+    min-width: 0;
+  }
+  h2 {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.04em 0.12em 0.12em 0;
+    margin-bottom: -0.12em;
+    font-size: clamp(4.5rem, 9vw, 7.875rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.06em;
+  }
+  .email-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 64px;
+    max-width: 100%;
+    padding-block: 16px 24px;
+    border-bottom: 1px solid var(--line);
+    font-size: clamp(1.125rem, 1.6vw, 1.4375rem);
+    text-decoration: none;
+    transition: border-color 200ms ease;
+  }
+  .email-link span:first-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .email-link .arrow {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--accent);
+    font-size: 1.5rem;
+  }
+  .socials {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 20px;
+  }
+  .socials .link {
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-decoration: none;
+  }
+  .email-link:focus-visible .arrow {
+    border-color: var(--accent);
+    background: var(--spectrum);
+    color: var(--bg);
+  }
+  @media (hover: hover) {
+    .email-link:hover {
+      border-color: var(--accent);
+    }
+    .email-link:hover .arrow {
+      transform: translate(3px, -3px);
+      border-color: var(--accent);
+      background: var(--spectrum);
+      color: var(--bg);
+    }
+    .socials .link:hover {
+      color: var(--accent);
+    }
+  }
+  @media (max-width: 1023px) {
+    .contact {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+  }
+  @media (max-width: 767px) {
+    .contact {
+      padding-block: 64px;
+      gap: 28px;
+    }
+    h2 {
+      font-size: clamp(4.25rem, 19vw, 7rem);
+    }
+    .email-link {
+      gap: 16px;
+      font-size: 1.125rem;
+    }
+    .socials {
+      gap: 8px 16px;
+    }
+  }
+  @media (forced-colors: active), print {
+    .contact::before {
+      display: none;
+    }
+  }
+</style>
