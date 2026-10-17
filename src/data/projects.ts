@@ -8,6 +8,9 @@ export interface Project {
   role: string;
   scope: string;
   symbol: 'atom' | 'orbit';
+  website?: string;
+  backdrop?: { src: string; width: number; height: number };
+  challenge?: string;
   contributions?: { title: string; description: string }[];
   result?: {
     value: string;
@@ -19,34 +22,47 @@ export interface Project {
   approach?: string;
 }
 
-// Approved project overviews from concepts/cosmos/projects/.
+// Project overviews based on Peter's CV and owner-provided project details.
 export const projects: Project[] = [
   {
     slug: 'forge',
     name: 'Ankr Forge',
-    context: 'Identity platform · Ankr Labs',
+    context: 'Points & Rewards platform · Ankr Labs',
     summary:
-      'Designed and shipped the backend, React application, and developer SDKs.',
+      'Built the app with an identity system and embedded wallet, replacing a paid third-party service.',
     description:
-      'Ankr Forge — Peter Mikheev’s work on an identity platform, including backend architecture, APIs, a React application, and developer SDKs.',
-    lead: 'I designed and shipped a platform for user authentication, account linking, and transaction workflows, covering both the backend and the React application.',
+      'Ankr Forge rewards users for completing partner tasks. Peter Mikheev built its sign-in system, embedded wallet, and frontend integrations.',
+    lead: 'Ankr Forge is a rewards platform where users earn points by completing partner tasks. Rewards are distributed periodically in Ankr tokens.',
     role: 'Senior Software Engineer · Ankr Labs',
-    scope: 'Backend, React application & SDKs',
+    scope: 'Identity backend, web interface, wallet & SDKs',
     symbol: 'atom',
+    website: 'https://www.ankr.com/forge/',
+    backdrop: {
+      src: 'projects/forge-desktop.webp',
+      width: 1600,
+      height: 1100,
+    },
+    challenge:
+      'Privy, the third-party sign-in and wallet provider, came with high service costs. I proposed an in-house replacement and took ownership of its implementation with limited backend support and a tight timeline.',
     contributions: [
       {
-        title: 'Backend',
-        description: 'Backend architecture, APIs, and database design.',
+        title: 'Accounts & sign-in',
+        description:
+          'Built the identity service for authentication and account linking, including its APIs and database.',
       },
       {
-        title: 'Application',
-        description: 'Frontend development of the React application.',
+        title: 'Built-in wallet',
+        description:
+          'Built a non-custodial wallet with passkey signing and account recovery, keeping users in control of their keys.',
       },
       {
-        title: 'Developer SDKs',
-        description: 'Core and React SDKs for client integrations.',
+        title: 'Web app & SDKs',
+        description:
+          'Built the React frontend and connected it to the existing points backend and identity service. Created SDKs for reuse across products.',
       },
     ],
+    approach:
+      'The new system fully replaced Privy in production. Users could sign in with Google and deposit or withdraw supported tokens without paying network fees. The wallet release focused on these flows to meet Forge’s immediate needs.',
   },
   {
     slug: 'davos',

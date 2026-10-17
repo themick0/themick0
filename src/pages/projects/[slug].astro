@@ -30,85 +30,157 @@ const back = pathTo(`#project-${project.slug}`);
   casePage
 >
   <Header />
-  <main class="case wrap" id="main" tabindex="-1">
-    <a class="link case-link back-link case-back" href={back}
-      ><span class="arrow" aria-hidden="true">←</span> Back to projects</a
-    >
-    <p class="eyebrow">{project.context}</p>
-    <h1 class="case-title">{project.name}<span class="accent">.</span></h1>
-    <p class="case-lead">{project.lead}</p>
-    <dl class="case-meta">
-      <div><dt>Role</dt><dd>{project.role}</dd></div>
-      <div><dt>Scope</dt><dd>{project.scope}</dd></div>
-    </dl>
+  <div class="case-stage">
     {
-      project.result && (
-        <section class="result-panel" aria-labelledby="result-title">
-          <h2 id="result-title">
-            <strong>{project.result.value}</strong> {project.result.description}
-          </h2>
-          <dl class="comparison">
-            <div>
-              <>
-                <dt>Before</dt>
-                <dd>{project.result.before}</dd>
-              </>
-            </div>
-            <div>
-              <>
-                <dt>After</dt>
-                <dd>{project.result.after}</dd>
-              </>
-            </div>
-          </dl>
-          <p class="comparison-note">{project.result.unit}</p>
-        </section>
+      project.backdrop && (
+        <div class="case-backdrop" aria-hidden="true">
+          <img
+            src={pathTo(project.backdrop.src)}
+            width={project.backdrop.width}
+            height={project.backdrop.height}
+            alt=""
+            decoding="async"
+          />
+        </div>
       )
     }
-    {
-      project.contributions && (
-        <section class="case-section" aria-labelledby="contribution-title">
-          <h2 id="contribution-title">My contribution</h2>
-          <ul class="contributions" role="list">
-            {project.contributions.map(({ title, description }) => (
-              <li>
-                <h3>{title}</h3>
-                <p>{description}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-    {
-      project.approach && (
-        <section class="case-section" aria-labelledby="approach-title">
-          <h2 id="approach-title">What changed</h2>
-          <p>{project.approach}</p>
-        </section>
-      )
-    }
-    <nav class="case-navigation" aria-label="Project navigation">
-      <a class="link case-link back-link" href={back}
+    <main class="case wrap" id="main" tabindex="-1">
+      <a class="link case-link back-link case-back" href={back}
         ><span class="arrow" aria-hidden="true">←</span> Back to projects</a
       >
+      <p class="eyebrow">{project.context}</p>
+      <div class="case-heading">
+        <h1 class="case-title">{project.name}<span class="accent">.</span></h1>
+        {
+          project.website && (
+            <a
+              class="link case-link case-website"
+              href={project.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Visit website: ${project.name} (opens in a new tab)`}
+            >
+              Visit website{' '}
+              <span class="arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          )
+        }
+      </div>
+      <p class="case-lead">{project.lead}</p>
+      <dl class="case-meta">
+        <div><dt>Role</dt><dd>{project.role}</dd></div>
+        <div><dt>Scope</dt><dd>{project.scope}</dd></div>
+      </dl>
       {
-        next && (
-          <a class="link case-link" href={pathTo(`projects/${next.slug}/`)}>
-            {next.name}{' '}
-            <span class="arrow" aria-hidden="true">
-              →
-            </span>
-          </a>
+        project.result && (
+          <section class="result-panel" aria-labelledby="result-title">
+            <h2 id="result-title">
+              <strong>{project.result.value}</strong>{' '}
+              {project.result.description}
+            </h2>
+            <dl class="comparison">
+              <div>
+                <>
+                  <dt>Before</dt>
+                  <dd>{project.result.before}</dd>
+                </>
+              </div>
+              <div>
+                <>
+                  <dt>After</dt>
+                  <dd>{project.result.after}</dd>
+                </>
+              </div>
+            </dl>
+            <p class="comparison-note">{project.result.unit}</p>
+          </section>
         )
       }
-      <a class="link case-link" href={pathTo('#contact')}
-        >Contact <span class="arrow" aria-hidden="true">↗</span></a
-      >
-    </nav>
-  </main>
+      {
+        project.challenge && (
+          <section class="case-section" aria-labelledby="challenge-title">
+            <h2 id="challenge-title">The challenge</h2>
+            <p>{project.challenge}</p>
+          </section>
+        )
+      }
+      {
+        project.contributions && (
+          <section class="case-section" aria-labelledby="contribution-title">
+            <h2 id="contribution-title">My contribution</h2>
+            <ul class="contributions" role="list">
+              {project.contributions.map(({ title, description }) => (
+                <li>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        project.approach && (
+          <section class="case-section" aria-labelledby="approach-title">
+            <h2 id="approach-title">What changed</h2>
+            <p>{project.approach}</p>
+          </section>
+        )
+      }
+      <nav class="case-navigation" aria-label="Project navigation">
+        <a class="link case-link back-link" href={back}
+          ><span class="arrow" aria-hidden="true">←</span> Back to projects</a
+        >
+        {
+          next && (
+            <a class="link case-link" href={pathTo(`projects/${next.slug}/`)}>
+              {next.name}{' '}
+              <span class="arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          )
+        }
+        <a class="link case-link" href={pathTo('#contact')}
+          >Contact <span class="arrow" aria-hidden="true">↗</span></a
+        >
+      </nav>
+    </main>
+  </div>
 </BaseLayout>
 <style>
+  .case-stage {
+    position: relative;
+    isolation: isolate;
+  }
+  .case-backdrop {
+    position: absolute;
+    z-index: -1;
+    inset: 0 0 auto;
+    height: 820px;
+    overflow: clip;
+    pointer-events: none;
+    user-select: none;
+    mask-image: linear-gradient(
+      180deg,
+      transparent,
+      #000 18%,
+      #000 52%,
+      transparent
+    );
+  }
+  .case-backdrop img {
+    position: absolute;
+    top: 24px;
+    right: -160px;
+    width: min(1240px, 110vw);
+    height: auto;
+    opacity: 0.18;
+    filter: saturate(0.7);
+    mask-image: linear-gradient(90deg, transparent, #000 55%);
+  }
   .case {
     max-width: 1000px;
     padding-block: 36px 64px;
@@ -137,16 +209,34 @@ const back = pathTo(`#project-${project.slug}`);
     background-color: #b9def210;
     color: var(--text);
   }
+  .case-website {
+    flex-shrink: 0;
+    color: var(--accent);
+    border-color: #c3e7ff59;
+    background: #101b2ae6;
+  }
   .eyebrow {
     margin-bottom: 20px;
     color: var(--muted);
     font-size: 0.8125rem;
     letter-spacing: 0.06em;
   }
+  .case-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px 24px;
+  }
   .case-title {
+    min-width: 0;
+    max-width: 100%;
     font-size: clamp(2.75rem, 6vw, 5rem);
     font-weight: 400;
     letter-spacing: -0.06em;
+  }
+  /* Trim font leading to align the button with the title's capital letters. */
+  .case-heading:has(.case-website) .case-title {
+    text-box: trim-both cap alphabetic;
   }
   .case-lead {
     max-width: 60ch;
@@ -253,6 +343,15 @@ const back = pathTo(`#project-${project.slug}`);
     }
   }
   @media (max-width: 767px) {
+    .case-backdrop {
+      height: 660px;
+    }
+    .case-backdrop img {
+      top: 32px;
+      right: -260px;
+      width: 900px;
+      opacity: 0.11;
+    }
     .case {
       padding-block: 24px 48px;
     }
@@ -288,7 +387,8 @@ const back = pathTo(`#project-${project.slug}`);
       background: var(--surface);
     }
     .case-navigation,
-    .case-back {
+    .case-back,
+    .case-backdrop {
       display: none;
     }
   }

@@ -38,7 +38,7 @@ const { home = false } = Astro.props;
   </div>
   <nav aria-label="Main navigation">
     <a href={home ? '#work' : pathTo('#work')}>My work</a>
-    <a href={home ? '#contact' : pathTo('#contact')}>Contact</a>
+    <a href={home ? '#contact' : pathTo('#contact')}>Contact me</a>
   </nav>
 </header>
 <style>
@@ -94,7 +94,8 @@ const { home = false } = Astro.props;
   nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 2.25rem;
+    gap: 12px;
+    max-width: 100%;
   }
   nav a {
     display: inline-flex;
@@ -102,9 +103,23 @@ const { home = false } = Astro.props;
     justify-content: center;
     min-height: 44px;
     min-width: 44px;
+    max-width: 100%;
+    padding: 8px 18px;
+    border: 1px solid #586b8559;
+    border-radius: 999px;
+    background: #abcaff05;
     font-size: 0.9375rem;
     text-decoration: none;
-    transition: color 160ms ease-out;
+    transition:
+      color 160ms ease-out,
+      border-color 160ms ease-out,
+      background-color 160ms ease-out;
+  }
+  nav a:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+    border-radius: 999px;
+    background: #b9def21a;
   }
   @media (hover: hover) {
     .brand-name a:hover {
@@ -112,6 +127,8 @@ const { home = false } = Astro.props;
     }
     nav a:hover {
       color: var(--accent);
+      border-color: var(--accent);
+      background: #b9def21a;
     }
   }
   @media (max-width: 1023px) {
@@ -137,10 +154,19 @@ const { home = false } = Astro.props;
       font-size: 0.625rem;
     }
     nav {
-      gap: 18px;
+      gap: 8px;
     }
     nav a {
+      padding-inline: 12px;
       font-size: 0.875rem;
+    }
+  }
+  @media (max-width: 359px) {
+    nav {
+      width: 100%;
+    }
+    nav a {
+      flex-grow: 1;
     }
   }
   @media (max-height: 650px) and (min-width: 768px) and (pointer: fine) {
