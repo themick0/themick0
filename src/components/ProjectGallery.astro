@@ -1,0 +1,226 @@
+---
+import type { ProjectScreenshot } from '../data/projects';
+import { getImage } from 'astro:assets';
+import 'photoswipe/style.css';
+
+interface Props {
+  id: string;
+  name: string;
+  images: ProjectScreenshot[];
+}
+const { id, name, images } = Astro.props;
+const screenshots = await Promise.all(
+  images.map(async (image) => ({
+    ...image,
+    optimized: await getImage({
+      src: image.src,
+      width: 1600,
+      height: 900,
+      fit: 'cover',
+      position: 'top',
+      format: 'webp',
+      quality: 90,
+    }),
+  })),
+);
+---
+
+<section
+  class="gallery"
+  id={id}
+  data-project-gallery
+  data-name={name}
+  aria-label={`${name} screenshots`}
+  aria-roledescription="carousel"
+>
+  <div
+    class="gallery-viewport"
+    id={`${id}-slides`}
+    data-gallery-viewport
+    tabindex="0"
+    role="group"
+    aria-label="Screenshots. Use left and right arrow keys to browse."
+  >
+    {
+      screenshots.map((image, index) => (
+        <figure
+          class="gallery-slide"
+          data-gallery-slide
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${index + 1} of ${images.length}: ${image.caption}`}
+        >
+          <div class="gallery-frame">
+            <img
+              class="gallery-image"
+              data-gallery-image
+              src={image.optimized.src}
+              width="1600"
+              height="900"
+              alt={image.alt}
+              decoding="async"
+              loading={index === 0 ? 'eager' : 'lazy'}
+              draggable="false"
+            />
+            <button
+              class="gallery-enlarge"
+              type="button"
+              data-gallery-enlarge
+              aria-label={`Enlarge screenshot: ${image.caption}`}
+              aria-haspopup="dialog"
+              hidden
+            />
+          </div>
+        </figure>
+      ))
+    }
+  </div>
+  <div class="gallery-controls" data-gallery-controls hidden>
+    <div class="gallery-arrows">
+      <button
+        type="button"
+        class="gallery-arrow"
+        data-gallery-prev
+        aria-label="Previous screenshot"
+        aria-controls={`${id}-slides`}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m14 6-6 6 6 6"></path>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="gallery-arrow"
+        data-gallery-next
+        aria-label="Next screenshot"
+        aria-controls={`${id}-slides`}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m10 6 6 6-6 6"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initProjectGallery } from '../scripts/project-gallery';
+  document
+    .querySelectorAll<HTMLElement>('[data-project-gallery]')
+    .forEach(initProjectGallery);
+</script>
+
+<style>
+  .gallery {
+    min-width: 0;
+    width: 100%;
+  }
+  .gallery-viewport {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    border: 1px solid #43546e;
+    border-radius: 12px;
+  }
+  .gallery[data-ready] .gallery-viewport {
+    scrollbar-width: none;
+  }
+  .gallery[data-ready] .gallery-viewport::-webkit-scrollbar {
+    display: none;
+  }
+  .gallery-slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    margin: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .gallery-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #e8ebf2;
+  }
+  .gallery-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .gallery-enlarge {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px;
+    border: 0;
+    color: var(--text);
+    background: transparent;
+    cursor: zoom-in;
+  }
+  .gallery-enlarge:focus-visible {
+    outline-offset: -5px;
+  }
+  svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .gallery-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+  .gallery-arrows {
+    display: flex;
+    flex-shrink: 0;
+    gap: 6px;
+  }
+  .gallery-arrow {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: #abcaff05;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  @media (hover: hover) {
+    .gallery-arrow:hover {
+      border-color: var(--accent);
+      background: #1a2b42;
+    }
+  }
+  @media print {
+    .gallery-viewport {
+      display: block;
+      overflow: visible;
+      border: 0;
+    }
+    .gallery-slide {
+      margin-bottom: 16px;
+      break-inside: avoid;
+    }
+    .gallery-enlarge,
+    .gallery-controls {
+      display: none;
+    }
+  }
+
+  :global(.project-lightbox) {
+    --pswp-bg: #05070d;
+    cursor: zoom-out;
+  }
+  :global(.project-lightbox .pswp__img) {
+    border-radius: 5px;
+    cursor: zoom-out;
+  }
+</style>

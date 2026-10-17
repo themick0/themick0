@@ -1,3 +1,16 @@
+import type { ImageMetadata } from 'astro';
+import forgePlatform from '../../public/projects/forge-desktop.webp';
+import forgeCampaign from '../../public/projects/forge-desktop-2.png';
+import forgeTask from '../../public/projects/forge-desktop-3.png';
+import forgeAccount from '../../public/projects/forge-desktop-4.png';
+import forgeSocialAccounts from '../../public/projects/forge-desktop-5.png';
+
+export interface ProjectScreenshot {
+  src: ImageMetadata;
+  alt: string;
+  caption: string;
+}
+
 export interface Project {
   slug: string;
   name: string;
@@ -5,13 +18,15 @@ export interface Project {
   summary: string;
   description: string;
   lead: string;
-  role: string;
-  scope: string;
+  role?: string;
+  scope?: string;
   symbol: 'atom' | 'orbit';
   website?: string;
-  backdrop?: { src: string; width: number; height: number };
-  challenge?: string;
-  contributions?: { title: string; description: string }[];
+  overview?: {
+    story: string;
+    images: ProjectScreenshot[];
+    contributions: { title: string; description: string }[];
+  };
   result?: {
     value: string;
     description: string;
@@ -27,42 +42,62 @@ export const projects: Project[] = [
   {
     slug: 'forge',
     name: 'Ankr Forge',
-    context: 'Points & Rewards platform · Ankr Labs',
+    context: 'Rewards & Points platform · Ankr Labs',
     summary:
-      'Built the app with an identity system and embedded wallet, replacing a paid third-party service.',
+      'Built the app with its own identity system and wallet, replacing a paid external service.',
     description:
-      'Ankr Forge rewards users for completing partner tasks. Peter Mikheev built its sign-in system, embedded wallet, and frontend integrations.',
-    lead: 'Ankr Forge is a rewards platform where users earn points by completing partner tasks. Rewards are distributed periodically in Ankr tokens.',
-    role: 'Senior Software Engineer · Ankr Labs',
-    scope: 'Identity backend, web interface, wallet & SDKs',
+      'Peter Mikheev built Ankr Forge’s web interface, sign-in system and built-in wallet, fully replacing an external provider in the live rewards platform.',
+    lead: 'Ankr Rewards & Points platform: users complete tasks from partner companies, earn points and receive cryptocurrency rewards.',
     symbol: 'atom',
     website: 'https://www.ankr.com/forge/',
-    backdrop: {
-      src: 'projects/forge-desktop.webp',
-      width: 1600,
-      height: 1100,
+    overview: {
+      story:
+        'I proposed and developed Forge’s own login system and wallet. These services fully replaced a costly external provider in production. I built the platform’s web interface and integrated the new services.',
+      images: [
+        {
+          src: forgePlatform,
+          alt: 'Ankr Forge interface showing partner campaigns, sign-in and tasks for earning points.',
+          caption: 'Rewards platform',
+        },
+        {
+          src: forgeCampaign,
+          alt: 'Ankr partner campaign showing available tasks, points and user progress.',
+          caption: 'Partner campaign',
+        },
+        {
+          src: forgeTask,
+          alt: 'Task details showing the points reward, completion status and X account connection.',
+          caption: 'Task details',
+        },
+        {
+          src: forgeAccount,
+          alt: 'Ankr account panel showing the ANKR balance, Google login, wallet management and linked social accounts.',
+          caption: 'Ankr account',
+        },
+        {
+          src: forgeSocialAccounts,
+          alt: 'Linked social accounts panel with a connected Google account and options to connect Discord and X.',
+          caption: 'Linked social accounts',
+        },
+      ],
+      contributions: [
+        {
+          title: 'Identity service',
+          description:
+            'Integrated social login via OAuth and external wallet connections. Added account linking and made user data available to internal services.',
+        },
+        {
+          title: 'Smart wallet',
+          description:
+            'Built a non-custodial wallet using passkeys and ERC-4337 account abstraction. Users can deposit and withdraw supported tokens without paying network fees.',
+        },
+        {
+          title: 'Frontend app',
+          description:
+            'Developed the rewards platform’s web app and standalone authentication packages for the identity service.',
+        },
+      ],
     },
-    challenge:
-      'Privy, the third-party sign-in and wallet provider, came with high service costs. I proposed an in-house replacement and took ownership of its implementation with limited backend support and a tight timeline.',
-    contributions: [
-      {
-        title: 'Accounts & sign-in',
-        description:
-          'Built the identity service for authentication and account linking, including its APIs and database.',
-      },
-      {
-        title: 'Built-in wallet',
-        description:
-          'Built a non-custodial wallet with passkey signing and account recovery, keeping users in control of their keys.',
-      },
-      {
-        title: 'Web app & SDKs',
-        description:
-          'Built the React frontend and connected it to the existing points backend and identity service. Created SDKs for reuse across products.',
-      },
-    ],
-    approach:
-      'The new system fully replaced Privy in production. Users could sign in with Google and deposit or withdraw supported tokens without paying network fees. The wallet release focused on these flows to meet Forge’s immediate needs.',
   },
   {
     slug: 'davos',

@@ -10,8 +10,8 @@ export const profile = {
   role,
   roleLines,
   email: 'pamiheevcorp@gmail.com',
-  description: `${name} — ${role}. Full-Stack Engineering, DeFi Solutions and AI Automation. From architecture to production.`,
-  expertise: ['Full-Stack Engineering', 'DeFi Solutions', 'AI Automation'],
+  description: `${name} — ${role}. DeFi Solutions, Full-Stack Engineering and AI Automation. From architecture to production.`,
+  expertise: ['DeFi Solutions', 'Full-Stack Engineering', 'AI Automation'],
   socials: [
     { label: 'GitHub', href: github },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/tenshou' },
