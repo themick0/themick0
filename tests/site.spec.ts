@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const routes = ['./', 'projects/forge/', 'projects/davos/', '404.html'];
+const routes = ['./', 'projects/forge/', '404.html'];
 
 test('unknown URLs return an actual 404 with noindex', async ({ page }) => {
   const response = await page.goto('this-page-does-not-exist/');
@@ -31,16 +31,20 @@ test('pages fit small phones, tablets, desktop and enlarged text', async ({
   for (const route of routes) {
     await page.goto(route);
     await expect(page.locator('h1')).toBeVisible();
-    for (const width of [320, 390, 540, 768, 1024, 1440, 1920]) {
-      await page.setViewportSize({ width, height: 900 });
-      await expectNoOverflow(page);
-      await page.evaluate(
-        () => (document.documentElement.style.fontSize = '200%'),
-      );
-      await expectNoOverflow(page);
-      await page.evaluate(() =>
-        document.documentElement.style.removeProperty('font-size'),
-      );
+    for (const expanded of route === './' ? [false, true] : [false]) {
+      if (expanded)
+        await page.getByRole('button', { name: 'More projects' }).click();
+      for (const width of [320, 390, 540, 768, 1024, 1440, 1920]) {
+        await page.setViewportSize({ width, height: 900 });
+        await expectNoOverflow(page);
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = '200%'),
+        );
+        await expectNoOverflow(page);
+        await page.evaluate(() =>
+          document.documentElement.style.removeProperty('font-size'),
+        );
+      }
     }
   }
   expect(errors).toEqual([]);
@@ -60,16 +64,21 @@ test('content and case navigation work without JavaScript', async ({
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     'Senior Software',
   );
+  await expect(page.locator('.project-list > li:visible')).toHaveCount(9);
+  await expect(page.getByRole('button', { name: 'More projects' })).toHaveCount(
+    0,
+  );
   await page.getByRole('link', { name: /^Ankr Forge/ }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Ankr Forge.',
   );
-  await page.getByRole('link', { name: 'Davos Protocol' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Davos Protocol.',
+  await expect(page.getByRole('link', { name: /^Neuraverse/ })).toHaveAttribute(
+    'target',
+    '_blank',
   );
   await page.getByRole('link', { name: 'Back to projects' }).first().click();
-  await expect(page).toHaveURL(/#project-davos$/);
+  await expect(page).toHaveURL(/#project-forge$/);
+  await expect(page.locator('#project-davos a')).toHaveCount(0);
   await expect(page.locator('a[href^="mailto:"]')).toBeVisible();
   await context.close();
 });
@@ -78,14 +87,148 @@ test('pages pass automated accessibility checks', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const route of routes) {
     await page.goto(route);
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
-      .analyze();
-    expect(
-      results.violations,
-      `${route}: ${JSON.stringify(results.violations)}`,
-    ).toEqual([]);
+    for (const expanded of route === './' ? [false, true] : [false]) {
+      if (expanded)
+        await page.getByRole('button', { name: 'More projects' }).click();
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+        .analyze();
+      expect(
+        results.violations,
+        `${route}: ${JSON.stringify(results.violations)}`,
+      ).toEqual([]);
+    }
   }
+});
+
+test('More reveals the remaining projects without moving the page or losing keyboard focus', async ({
+  page,
+  isMobile,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('./');
+  const rows = page.locator('.project-list > li:visible');
+  const more = page.getByRole('button', { name: 'More projects' });
+  await expect(rows).toHaveCount(3);
+  await expect(more).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('#project-swirl')).toBeHidden();
+
+  if (!isMobile) {
+    await page.locator('#project-mat-stake a').focus();
+    await page.keyboard.press('Tab');
+    await expect(more).toBeFocused();
+  }
+  await more.scrollIntoViewIfNeeded();
+  const scrollBefore = await page.evaluate(() => scrollY);
+  if (isMobile) await more.tap();
+  else await page.keyboard.press('Enter');
+
+  await expect(rows).toHaveCount(9);
+  await expect(more).toBeHidden();
+  await expect(page.locator('#project-swirl a')).toBeFocused();
+  expect(
+    Math.abs((await page.evaluate(() => scrollY)) - scrollBefore),
+  ).toBeLessThan(5);
+});
+
+test('project anchors reveal hidden entries on arrival and hash changes', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('./#project-inception-lrt');
+  await expect(page.locator('#project-inception-lrt')).toBeInViewport();
+  await expect(page.locator('.project-list > li:visible')).toHaveCount(9);
+
+  await page.goto('./');
+  await page.reload();
+  await expect(page.locator('.project-list > li:visible')).toHaveCount(3);
+  await page.evaluate(() => {
+    location.hash = 'project-ankr-automate';
+  });
+  await expect(page.locator('#project-ankr-automate')).toBeInViewport();
+  await expect(page.locator('.project-list > li:visible')).toHaveCount(9);
+});
+
+test('projects with websites open in a new tab and Forge keeps its case page', async ({
+  page,
+  context,
+}) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'More projects' }).click();
+  const forge = page.locator('#project-forge a');
+  await expect(forge).toHaveAttribute('href', /\/projects\/forge\/$/);
+  await expect(forge).not.toHaveAttribute('target', '_blank');
+
+  const destinations = [
+    ['neuraverse', 'https://neuraverse.neuraprotocol.io/'],
+    ['mat-stake', 'https://matstake.io/'],
+    ['swirl', 'https://swirlstake.com/'],
+    ['staking-circle', 'https://www.stakingcircle.com/'],
+    ['inception-lrt', 'https://www.inceptionlrt.com/'],
+    ['ankr-staking', 'https://www.ankr.com/staking/'],
+    ['ankr-automate', 'https://www.ankr.com/automate'],
+  ];
+  for (const [slug, url] of destinations) {
+    const link = page.locator(`#project-${slug} a`);
+    await expect(link).toHaveAttribute('href', url);
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', /noopener/);
+    await expect(link).toHaveAttribute('rel', /noreferrer/);
+    await expect(link).toHaveAccessibleDescription('Opens in a new tab.');
+  }
+
+  await context.route('https://matstake.io/**', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<title>Project website</title>',
+    }),
+  );
+  const originalUrl = page.url();
+  const popupPromise = page.waitForEvent('popup');
+  await page.locator('#project-mat-stake a').click();
+  const popup = await popupPromise;
+  await expect(popup).toHaveURL('https://matstake.io/');
+  await expect(page).toHaveURL(originalUrl);
+  await popup.close();
+  await forge.click();
+  await expect(page).toHaveURL(/\/projects\/forge\/$/);
+  expect(context.pages()).toHaveLength(1);
+});
+
+test('projects without websites have no navigation or interactive treatment', async ({
+  page,
+  context,
+  isMobile,
+}) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'More projects' }).click();
+  const project = page.locator('#project-davos');
+  await expect(project.getByRole('heading')).toHaveText('Davos Protocol');
+  await expect(
+    project.locator('a, button, [tabindex], .project-arrow, .project-link'),
+  ).toHaveCount(0);
+  await expect(project.locator('.project-row')).toHaveCSS('cursor', 'auto');
+  const originalUrl = page.url();
+  await project.click();
+  await expect(page).toHaveURL(originalUrl);
+  expect(context.pages()).toHaveLength(1);
+
+  if (!isMobile) {
+    await page.locator('#project-swirl a').focus();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#project-staking-circle a')).toBeFocused();
+  }
+});
+
+test('projects without case studies do not generate detail pages', async ({
+  page,
+}) => {
+  const response = await page.goto('projects/davos/');
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Lost in space.',
+  );
 });
 
 test('skip link and primary navigation work with the keyboard', async ({
@@ -262,7 +405,7 @@ test('mobile intro stays stable on height-only resize and adapts to rotation', a
           ),
         ),
     )
-    .toBe(viewport.width);
+    .toBe(viewport.width - (viewport.height < 768 ? 96 : 112));
   await expectNoOverflow(page);
 
   // Crossing the compact desktop height threshold must not reflow a touch layout.
@@ -278,7 +421,7 @@ test('mobile intro stays stable on height-only resize and adapts to rotation', a
           ),
         ),
     )
-    .toBe(640);
+    .toBe(640 - 112);
   const landscapeHeight = await intro.evaluate(
     (element) => element.clientHeight,
   );

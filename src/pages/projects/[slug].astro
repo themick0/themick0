@@ -7,40 +7,51 @@ import { projects } from '../../data/projects';
 import { profile } from '../../data/profile';
 import { pathTo } from '../../lib/paths';
 
-export const getStaticPaths = (() =>
-  projects.map((project, index) => ({
-    params: { slug: project.slug },
-    props: {
-      project,
-      next:
-        projects.length > 1
-          ? projects[(index + 1) % projects.length]
-          : undefined,
-    },
-  }))) satisfies GetStaticPaths;
+export const getStaticPaths = (() => {
+  const linkedProjects = projects.filter(
+    (project) => project.caseStudy || project.website,
+  );
+  return linkedProjects.flatMap((project, index) =>
+    project.caseStudy
+      ? [
+          {
+            params: { slug: project.slug },
+            props: {
+              project,
+              caseStudy: project.caseStudy,
+              next:
+                linkedProjects.length > 1
+                  ? linkedProjects[(index + 1) % linkedProjects.length]
+                  : undefined,
+            },
+          },
+        ]
+      : [],
+  );
+}) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
-const { project, next } = Astro.props;
+const { project, caseStudy, next } = Astro.props;
 const back = pathTo(`#project-${project.slug}`);
 ---
 
 <BaseLayout
   title={`${project.name} — ${profile.name}`}
-  description={project.description}
+  description={caseStudy.description}
   projectName={project.name}
   casePage
 >
   <Header />
   <div class="case-stage">
     <main
-      class:list={['case wrap', { 'case-overview': project.overview }]}
+      class:list={['case wrap', { 'case-overview': caseStudy.overview }]}
       id="main"
       tabindex="-1"
     >
       <a class="link case-link back-link case-back" href={back}
         ><span class="arrow" aria-hidden="true">←</span> Back to projects</a
       >
-      {!project.overview && <p class="eyebrow">{project.context}</p>}
+      {!caseStudy.overview && <p class="eyebrow">{project.context}</p>}
       <div class="case-heading">
         <h1 class="case-title">{project.name}<span class="accent">.</span></h1>
         {
@@ -60,19 +71,19 @@ const back = pathTo(`#project-${project.slug}`);
           )
         }
       </div>
-      <p class="case-lead">{project.lead}</p>
+      <p class="case-lead">{caseStudy.lead}</p>
       {
-        project.overview && (
+        caseStudy.overview && (
           <>
-            <p class="case-story">{project.overview.story}</p>
+            <p class="case-story">{caseStudy.overview.story}</p>
             <div class="case-details">
               <ProjectGallery
                 id={`gallery-${project.slug}`}
                 name={project.name}
-                images={project.overview.images}
+                images={caseStudy.overview.images}
               />
               <div class="case-contributions">
-                {project.overview.contributions.map(
+                {caseStudy.overview.contributions.map(
                   ({ title, description }, index) => (
                     <section aria-labelledby={`contribution-${index}`}>
                       <h2 id={`contribution-${index}`}>{title}</h2>
@@ -86,53 +97,53 @@ const back = pathTo(`#project-${project.slug}`);
         )
       }
       {
-        project.role && project.scope && (
+        caseStudy.role && caseStudy.scope && (
           <dl class="case-meta">
             <div>
               <>
                 <dt>Role</dt>
-                <dd>{project.role}</dd>
+                <dd>{caseStudy.role}</dd>
               </>
             </div>
             <div>
               <>
                 <dt>Scope</dt>
-                <dd>{project.scope}</dd>
+                <dd>{caseStudy.scope}</dd>
               </>
             </div>
           </dl>
         )
       }
       {
-        project.result && (
+        caseStudy.result && (
           <section class="result-panel" aria-labelledby="result-title">
             <h2 id="result-title">
-              <strong>{project.result.value}</strong>{' '}
-              {project.result.description}
+              <strong>{caseStudy.result.value}</strong>{' '}
+              {caseStudy.result.description}
             </h2>
             <dl class="comparison">
               <div>
                 <>
                   <dt>Before</dt>
-                  <dd>{project.result.before}</dd>
+                  <dd>{caseStudy.result.before}</dd>
                 </>
               </div>
               <div>
                 <>
                   <dt>After</dt>
-                  <dd>{project.result.after}</dd>
+                  <dd>{caseStudy.result.after}</dd>
                 </>
               </div>
             </dl>
-            <p class="comparison-note">{project.result.unit}</p>
+            <p class="comparison-note">{caseStudy.result.unit}</p>
           </section>
         )
       }
       {
-        project.approach && (
+        caseStudy.approach && (
           <section class="case-section" aria-labelledby="approach-title">
             <h2 id="approach-title">What changed</h2>
-            <p>{project.approach}</p>
+            <p>{caseStudy.approach}</p>
           </section>
         )
       }
@@ -142,10 +153,20 @@ const back = pathTo(`#project-${project.slug}`);
         >
         {
           next && (
-            <a class="link case-link" href={pathTo(`projects/${next.slug}/`)}>
+            <a
+              class="link case-link"
+              href={
+                next.caseStudy ? pathTo(`projects/${next.slug}/`) : next.website
+              }
+              target={next.caseStudy ? undefined : '_blank'}
+              rel={next.caseStudy ? undefined : 'noopener noreferrer'}
+              aria-label={
+                next.caseStudy ? undefined : `${next.name} (opens in a new tab)`
+              }
+            >
               {next.name}{' '}
               <span class="arrow" aria-hidden="true">
-                →
+                {next.caseStudy ? '→' : '↗'}
               </span>
             </a>
           )

@@ -6,31 +6,104 @@ import ProjectSymbol from './ProjectSymbol.astro';
 
 <section class="work" id="work" aria-labelledby="work-title">
   <h2 class="section-heading" id="work-title">My work</h2>
-  <ul class="project-list" role="list">
+  <p id="external-project-link-hint" hidden>Opens in a new tab.</p>
+  <ul class="project-list" id="project-list" role="list" data-project-list>
     {
-      projects.map((project) => (
-        <li id={`project-${project.slug}`}>
-          <a class="project-link" href={pathTo(`projects/${project.slug}/`)}>
-            <ProjectSymbol symbol={project.symbol} />
-            <div class="project-heading">
-              <h3 id={`${project.slug}-title`}>{project.name}</h3>
-              <p class="project-context" id={`${project.slug}-context`}>
-                {project.context}
+      projects.map((project) => {
+        const href = project.caseStudy
+          ? pathTo(`projects/${project.slug}/`)
+          : project.website;
+        const external = Boolean(href && !project.caseStudy);
+        const Row = href ? 'a' : 'div';
+
+        return (
+          <li id={`project-${project.slug}`}>
+            <Row
+              class:list={['project-row', { 'project-link': Boolean(href) }]}
+              href={href}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}
+              aria-describedby={
+                external ? 'external-project-link-hint' : undefined
+              }
+            >
+              <ProjectSymbol symbol={project.symbol} />
+              <div class="project-heading">
+                <h3 id={`${project.slug}-title`}>{project.name}</h3>
+                <p class="project-context" id={`${project.slug}-context`}>
+                  {project.context}
+                </p>
+              </div>
+              <p class="project-summary" id={`${project.slug}-summary`}>
+                {project.summary}
               </p>
-            </div>
-            <p class="project-summary" id={`${project.slug}-summary`}>
-              {project.summary}
-            </p>
-            <span class="project-arrow" aria-hidden="true">
-              <span class="arrow">↗</span>
-            </span>
-          </a>
-        </li>
-      ))
+              {href && (
+                <span class="project-arrow" aria-hidden="true">
+                  <span class="arrow">↗</span>
+                </span>
+              )}
+            </Row>
+          </li>
+        );
+      })
     }
   </ul>
+  {
+    projects.length > 3 && (
+      <button
+        class="project-more"
+        type="button"
+        aria-label="More projects"
+        aria-controls="project-list"
+        aria-expanded="false"
+        data-project-more
+        hidden
+      >
+        More
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="m5 8 5 5 5-5" />
+        </svg>
+      </button>
+    )
+  }
 </section>
 <script>
+  const list = document.querySelector<HTMLElement>('[data-project-list]');
+  const more = document.querySelector<HTMLButtonElement>('[data-project-more]');
+  if (list && more) {
+    const remaining = Array.from(
+      list.querySelectorAll<HTMLElement>('li'),
+    ).slice(3);
+    remaining.forEach((row) => (row.hidden = true));
+    more.hidden = false;
+
+    const reveal = (moveFocus = false) => {
+      remaining.forEach((row) => (row.hidden = false));
+      more.setAttribute('aria-expanded', 'true');
+      if (moveFocus) {
+        const first =
+          remaining[0].querySelector<HTMLElement>('a') ?? remaining[0];
+        if (!first.matches('a')) first.tabIndex = -1;
+        first.focus({ preventScroll: true });
+      }
+      more.hidden = true;
+    };
+    more.addEventListener('click', () => reveal(true));
+
+    const revealHashTarget = () => {
+      const target = document.getElementById(location.hash.slice(1));
+      if (
+        target &&
+        remaining.some((row) => row.hidden && row.contains(target))
+      ) {
+        reveal();
+        target.scrollIntoView({ behavior: 'instant', block: 'start' });
+      }
+    };
+    revealHashTarget();
+    window.addEventListener('hashchange', revealHashTarget);
+  }
+
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   document
     .querySelectorAll<HTMLAnchorElement>('.project-link')
@@ -49,7 +122,7 @@ import ProjectSymbol from './ProjectSymbol.astro';
 </script>
 <style>
   .work {
-    padding-block: 64px 24px;
+    padding-block: 50px 24px;
   }
   .section-heading {
     margin-bottom: 30px;
@@ -63,15 +136,15 @@ import ProjectSymbol from './ProjectSymbol.astro';
   .project-list li {
     border-bottom: 1px solid #273143;
   }
-  .project-link {
+  .project-row {
     position: relative;
     isolation: isolate;
     display: grid;
     grid-template-columns: 96px minmax(0, 1.15fr) minmax(0, 1fr) 52px;
-    min-height: 184px;
+    min-height: 148px;
     gap: 32px;
     align-items: center;
-    padding: 32px 8px;
+    padding: 22px 8px;
     text-decoration: none;
     transition: background-color 160ms ease-out;
   }
@@ -108,7 +181,7 @@ import ProjectSymbol from './ProjectSymbol.astro';
     font-size: 0.75rem;
   }
   .project-summary {
-    max-width: 33ch;
+    max-width: 36ch;
     color: var(--muted);
     font-size: 0.875rem;
     line-height: 1.7;
@@ -130,7 +203,43 @@ import ProjectSymbol from './ProjectSymbol.astro';
   .project-link:focus-visible h3 {
     color: var(--accent);
   }
+  .project-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 44px;
+    margin: 24px auto 0;
+    padding: 10px 24px;
+    border: 1px solid #43546e;
+    border-radius: 999px;
+    background: #abcaff05;
+    color: var(--accent);
+    font-size: 0.875rem;
+    cursor: pointer;
+    overflow-anchor: none;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease;
+  }
+  .project-more svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .project-more:focus-visible {
+    border-color: var(--accent);
+    background: var(--surface);
+  }
   @media (hover: hover) {
+    .project-more:hover {
+      border-color: var(--accent);
+      background: #1a2b42;
+    }
     .project-link:hover::before {
       opacity: 1;
     }
@@ -148,7 +257,7 @@ import ProjectSymbol from './ProjectSymbol.astro';
     }
   }
   @media (max-width: 1023px) {
-    .project-link {
+    .project-row {
       grid-template-columns: 70px minmax(0, 1.3fr) minmax(0, 1fr) 44px;
       gap: 20px;
     }
@@ -158,13 +267,13 @@ import ProjectSymbol from './ProjectSymbol.astro';
   }
   @media (max-width: 767px) {
     .work {
-      padding-block: 32px 12px;
+      padding-block: 16px 12px;
     }
-    .project-link {
+    .project-row {
       grid-template-columns: 52px minmax(0, 1fr) 36px;
       min-height: 0;
-      padding: 28px 0;
-      gap: 16px;
+      padding: 20px 0;
+      gap: 12px;
     }
     .project-heading {
       grid-column: 2;
@@ -192,7 +301,7 @@ import ProjectSymbol from './ProjectSymbol.astro';
     }
   }
   @media (max-width: 359px) {
-    .project-link {
+    .project-row {
       grid-template-columns: minmax(0, 1fr) 34px;
     }
     .project-heading {
@@ -211,13 +320,17 @@ import ProjectSymbol from './ProjectSymbol.astro';
     }
   }
   @media print {
+    .project-list > li[hidden] {
+      display: list-item !important;
+    }
     li {
       break-inside: avoid;
     }
-    .project-link {
+    .project-row {
       display: block;
     }
-    .project-arrow {
+    .project-arrow,
+    .project-more {
       display: none;
     }
   }

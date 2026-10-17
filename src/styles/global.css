@@ -116,6 +116,9 @@ a {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+h2.section-heading {
+  font-size: 1rem;
+}
 .iridescent {
   color: var(--accent);
 }
@@ -178,6 +181,9 @@ a {
   }
   .section-heading {
     font-size: 0.6875rem;
+  }
+  h2.section-heading {
+    font-size: 0.8125rem;
   }
 }
 @media (max-width: 359px) {

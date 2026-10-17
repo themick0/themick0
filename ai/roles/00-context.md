@@ -50,7 +50,7 @@ Home page order: large Senior Software Engineer heading → My work → About �
 
 The design uses a dark background, cool blue and lavender highlights, a planet, stars, and comets. The pointer gently changes the camera direction; there are no particles attached to the cursor. Motion continues without mouse input, while reduced motion provides a static scene. Opening comet tails follow their screen-space flight direction at every aspect ratio. Section links use native smooth scrolling unless reduced motion is requested. On touch devices, the opening's minimum height stays stable during browser toolbar changes and adapts when the viewport width changes. There is no pause/play button, at Peter's explicit request.
 
-Projects open on separate pages. Contacts use ordinary links. The production domain is `https://themick0.com/`; indexing is configured through `SITE_URL` and `SITE_INDEXABLE`. The site is deployed through GitHub Actions and served by Nginx.
+Ankr Forge opens its local case page. Other projects link directly to the website supplied in the CV in a new tab. Projects without a website are non-interactive rows with no arrow or link styling. Contacts use ordinary links. The production domain is `https://themick0.com/`; indexing is configured through `SITE_URL` and `SITE_INDEXABLE`. The site is deployed through GitHub Actions and served by Nginx.
 
 In the header and footer, Peter Mikheev links to the top of the home page, while themick0 links to the GitHub profile with hover and keyboard focus states. Links must not have text underlines on hover anywhere on the site. The header star is an inline SVG so it renders consistently on mobile and desktop.
 
@@ -60,6 +60,25 @@ In the header and footer, Peter Mikheev links to the top of the home page, while
 - **Davos Protocol, Tagus Labs:** frontend staking workflows and dashboards, from technical design to release. Approximately 85% fewer RPC requests per dashboard load, from 300–400 to 50–60, through request deduplication and caching static contract data. This does not imply the same improvement in UI speed or costs. [Reference overview](../../concepts/cosmos/projects/davos.html).
 
 Sources are the supplied CV linked above and Peter's subsequent project clarifications. Detailed measurement conditions for the RPC metric have not been provided. Do not extend the overviews with invented decisions, metrics, or images. Current project copy lives in the [typed data](../../src/data/projects.ts).
+
+## Project list and navigation
+
+Peter requested expanding the home-page list from the named products in his CV on October 17. The CV was fetched again through Google Drive, and the hyperlinks were extracted from its original Word document. The list contains nine projects: Ankr Forge, Neuraverse, MAT Stake, Swirl, Davos Protocol, Staking Circle, Inception LRT, Ankr Staking, and Ankr Automate. Earlier employers without separately named products are not presented as invented project names.
+
+- The list initially shows three projects. A single `More` button reveals all remaining entries in place and then disappears; focus moves to the first revealed project without scrolling. Hash links reveal their target automatically. Without JavaScript or when printing, all projects remain available.
+- Rows are more compact: a 148 px minimum height with 22 px vertical padding on desktop, and 20 px vertical padding with 12 px gaps on phones. Text remains unchanged.
+- Description line length is slightly wider at 36ch. The My work section has 50 px top padding on desktop and 16 px on phones. Its label and the About label use 16 px desktop / 13 px mobile type. The opening leaves 112 px on desktop or 96 px on phones for the start of the project section, subject to the content's minimum height; touch viewport stabilization remains in place.
+- Each project has a distinct inline SVG in the existing thin line style: atom for Forge, rocket for Neuraverse (Peter’s explicit request), prism for MAT Stake, spiral for Swirl, seven geometric petals radiating from the center for Davos (Peter’s explicit request), interlocking rings for Staking Circle, nested diamonds for Inception LRT, validator nodes for Ankr Staking, and a clock with circular arrows for Ankr Automate.
+- Ankr Forge retains its case page and approved summary. This is the only generated project page for now.
+- Other projects with CV hyperlinks open those URLs directly in a new tab using ordinary anchors and `noopener noreferrer`. Their summaries describe Peter's contribution rather than general product marketing.
+- Davos has no website link in the supplied CV. Its summary includes frontend delivery and approximately 85% fewer RPC requests per dashboard load; it has no arrow, click action, keyboard stop, or interactive hover treatment. Its former detail route is no longer generated. The verified measurement details remain above.
+- Neuraverse: replaced the React/CSS game layer with Pixi.js to address performance and stability, delivered an implementation in two weeks, and took it to production. CV URL: https://neuraverse.neuraprotocol.io/. This currently redirects to Neura's main site; the original CV URL is retained.
+- MAT Stake and Swirl: shipped staking applications with wallet integrations, BFF APIs, staking workflows, and performance dashboards. CV URLs: https://matstake.io/ and https://swirlstake.com/. Peter additionally confirmed IPFS storage and caching for MAT Stake in this conversation. His approved summary sentence is: “Integrated IPFS storage with advanced caching.” Do not invent cache layers or performance metrics.
+- Staking Circle and Inception LRT: owned frontend delivery from technical design to release, with staking workflows and portfolio/reward dashboards described in the Tagus Labs role. CV URLs: https://www.stakingcircle.com/ and https://www.inceptionlrt.com/.
+- Ankr Staking: built and maintained staking interfaces, portfolio dashboards, and wallet authentication while refactoring the legacy frontend. CV URL: https://www.ankr.com/staking/.
+- Ankr Automate: built the interface for scheduling recurring smart-contract interactions. CV URL: https://www.ankr.com/automate.
+
+Project data is in `src/data/projects.ts`. Optional `caseStudy` data controls internal page generation and takes priority over a website link in the list. Without either destination, `src/components/Projects.astro` renders a plain text row. The Forge page's next-project link follows the same internal/external distinction and skips entries without destinations.
 
 ## Ankr Forge page revision
 
@@ -99,12 +118,12 @@ A separate page with its own URL is the recommended format for a full case study
 
 ## First-version materials and constraints
 
-- Ankr Forge and Davos Protocol are the selected real projects. Their short pages use the verified information above.
+- The nine named products above form the project list. Ankr Forge is the only project with a separate case page.
 - Contacts from the [README](../../README.md): `pamiheevcorp@gmail.com`, https://www.linkedin.com/in/tenshou, https://t.me/peter_mikheev. Confirm they are current before public launch.
 - The production domain is `https://themick0.com/`. Do not invent owner details.
 - Application stack: Astro SSG, TypeScript, and scoped CSS; add components and dependencies as needed.
 - No backend, CMS, database, blog, additional languages, or complex contact form in the first version.
-- The home page and two short project overviews are implemented; detailed case studies require additional real materials.
+- The home page and Ankr Forge case page are implemented; other products use external links or non-interactive summaries.
 - Content and contact actions work without JS. Responsive layout, keyboard access, focus, contrast, and reduced motion are required.
 - The prototype is not published publicly. If remote review is needed, `noindex` does not replace restricted access.
 

@@ -58,11 +58,11 @@ import { profile } from '../data/profile';
     display: grid;
     grid-template-rows: auto 1fr auto auto;
   }
-  /* The opening spans three rows and fills the viewport even with short copy. */
+  /* Leave the beginning of the project section visible below the opening. */
   .home::before {
     content: '';
     grid-area: 1 / 1 / 4;
-    min-height: var(--intro-height, 100svh);
+    min-height: var(--intro-height, calc(100svh - 112px));
     pointer-events: none;
   }
   .home > :global(.site-header) {
@@ -74,6 +74,11 @@ import { profile } from '../data/profile';
     grid-area: 1 / 1 / 5;
     grid-template-rows: subgrid;
     min-width: 0;
+  }
+  @media (max-width: 767px) {
+    .home::before {
+      min-height: var(--intro-height, calc(100svh - 96px));
+    }
   }
   @media print {
     .home::before {
