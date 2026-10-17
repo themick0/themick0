@@ -13,6 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check code duplication
+        id: duplication
+        uses: kucherenko/jscpd@v5
+        with:
+          threshold: 5
+          ignore: '**/pnpm-lock.yaml,**/.git/**'
+          upload-sarif: false
+      # The action exposes the scanner's exit code without failing the step.
+      - name: Enforce duplication threshold
+        if: steps.duplication.outputs.exit-code != '0'
+        run: |
+          echo "::error::Code duplication check failed. See the jscpd report above."
+          exit 1
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
