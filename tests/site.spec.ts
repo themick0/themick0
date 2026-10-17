@@ -161,3 +161,135 @@ test('CSS scene and content survive unavailable Canvas', async ({ page }) => {
   await page.getByRole('link', { name: 'View projects' }).click();
   await expect(page).toHaveURL(/#work$/);
 });
+
+test('opening comet tails follow their on-screen flight direction', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const frames: { x: number; y: number; angle: number }[][] = [];
+    Object.assign(window, { cometFrames: frames });
+    const clear = CanvasRenderingContext2D.prototype.clearRect;
+    const gradient = CanvasRenderingContext2D.prototype.createLinearGradient;
+    CanvasRenderingContext2D.prototype.clearRect = function (...args) {
+      if (this.canvas.classList.contains('meteorfield')) {
+        frames.push([]);
+        if (frames.length > 120) frames.shift();
+      }
+      return clear.apply(this, args);
+    };
+    CanvasRenderingContext2D.prototype.createLinearGradient = function (
+      ...args
+    ) {
+      if (this.canvas.classList.contains('meteorfield')) {
+        const transform = this.getTransform();
+        frames.at(-1)?.push({
+          x: transform.e,
+          y: transform.f,
+          angle: Math.atan2(transform.b, transform.a),
+        });
+      }
+      return gradient.apply(this, args);
+    };
+  });
+  await page.goto('./');
+  const frames = () =>
+    page.evaluate(() =>
+      (
+        (
+          window as Window & {
+            cometFrames?: { x: number; y: number; angle: number }[][];
+          }
+        ).cometFrames ?? []
+      )
+        .filter((frame) => frame.length === 3)
+        .slice(0, 2),
+    );
+  await expect
+    .poll(async () => (await frames()).length, { timeout: 10_000 })
+    .toBe(2);
+  const [before, after] = await frames();
+  // The first two comets cross the screen; the third is the distant backdrop.
+  for (let index = 0; index < 2; index++) {
+    const dx = after[index].x - before[index].x;
+    const dy = after[index].y - before[index].y;
+    const distance = Math.hypot(dx, dy);
+    expect(distance).toBeGreaterThan(0);
+    const alignment =
+      (dx * Math.cos(after[index].angle) + dy * Math.sin(after[index].angle)) /
+      distance;
+    expect(alignment).toBeLessThan(-0.999);
+  }
+});
+
+test('mobile intro stays stable on height-only resize and adapts to rotation', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'Mobile browser toolbar scenario');
+  await page.goto('./');
+  const intro = page.locator('.intro');
+  const viewport = page.viewportSize()!;
+  const height = await intro.evaluate((element) => element.clientHeight);
+  const canvasHeight = await page
+    .locator('.meteorfield')
+    .getAttribute('height');
+
+  // A height-only resize models browser chrome expanding or collapsing.
+  await page.setViewportSize({ ...viewport, height: viewport.height + 100 });
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  expect(await intro.evaluate((element) => element.clientHeight)).toBe(height);
+  await expect(page.locator('.meteorfield')).toHaveAttribute(
+    'height',
+    canvasHeight!,
+  );
+
+  await page.setViewportSize({
+    width: viewport.height,
+    height: viewport.width,
+  });
+  await expect
+    .poll(() =>
+      page
+        .locator('.home')
+        .evaluate((element) =>
+          parseFloat(
+            (element as HTMLElement).style.getPropertyValue('--intro-height'),
+          ),
+        ),
+    )
+    .toBe(viewport.width);
+  await expectNoOverflow(page);
+
+  // Crossing the compact desktop height threshold must not reflow a touch layout.
+  const landscapeWidth = Math.max(viewport.height + 100, 844);
+  await page.setViewportSize({ width: landscapeWidth, height: 640 });
+  await expect
+    .poll(() =>
+      page
+        .locator('.home')
+        .evaluate((element) =>
+          parseFloat(
+            (element as HTMLElement).style.getPropertyValue('--intro-height'),
+          ),
+        ),
+    )
+    .toBe(640);
+  const landscapeHeight = await intro.evaluate(
+    (element) => element.clientHeight,
+  );
+  await page.setViewportSize({ width: landscapeWidth, height: 740 });
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  expect(await intro.evaluate((element) => element.clientHeight)).toBe(
+    landscapeHeight,
+  );
+});

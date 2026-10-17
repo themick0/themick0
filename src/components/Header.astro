@@ -8,14 +8,36 @@ const { home = false } = Astro.props;
 ---
 
 <header class:list={['site-header', 'wrap', { 'case-header': !home }]}>
-  <a class="brand" href={home ? '#top' : pathTo()}>
-    <span class="brand-star" aria-hidden="true">✳</span>
-    <span class="brand-name"
-      >{profile.name}<span class="handle">{profile.handle}</span></span
+  <div class="brand">
+    <svg
+      class="brand-star"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 32 32"
+      width="32"
+      height="32"
+      aria-hidden="true"
+      focusable="false"
     >
-  </a>
+      <path
+        d="M16 3v26M3 16h26M6.8 6.8l18.4 18.4M6.8 25.2 25.2 6.8"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"></path>
+      <circle cx="16" cy="16" r="3" fill="currentColor"></circle>
+    </svg>
+    <div class="brand-name">
+      <a href={home ? '#top' : pathTo('#top')}>{profile.name}</a>
+      <a
+        class="handle"
+        href={profile.github}
+        rel="me"
+        aria-label={`${profile.handle} on GitHub`}>{profile.handle}</a
+      >
+    </div>
+  </div>
   <nav aria-label="Main navigation">
-    <a href={home ? '#work' : pathTo('#work')}>Projects</a>
+    <a href={home ? '#work' : pathTo('#work')}>My work</a>
     <a href={home ? '#contact' : pathTo('#contact')}>Contact</a>
   </nav>
 </header>
@@ -37,20 +59,31 @@ const { home = false } = Astro.props;
     align-items: center;
     gap: 14px;
     min-height: 44px;
-    padding-block: 10px;
+    padding-block: 4px;
     font-size: 0.9375rem;
     font-weight: 500;
-    text-decoration: none;
   }
   .brand-star {
-    font-size: 2rem;
-    line-height: 1;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
     color: #d3e6fa;
   }
   .brand-name {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 1px;
+  }
+  .brand-name a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    text-decoration: none;
+    transition: color 160ms ease-out;
+  }
+  .brand-name a:focus-visible {
+    color: var(--accent);
   }
   .handle {
     color: var(--muted);
@@ -69,11 +102,14 @@ const { home = false } = Astro.props;
     justify-content: center;
     min-height: 44px;
     min-width: 44px;
-    font-size: 0.8125rem;
+    font-size: 0.9375rem;
     text-decoration: none;
     transition: color 160ms ease-out;
   }
   @media (hover: hover) {
+    .brand-name a:hover {
+      color: var(--accent);
+    }
     nav a:hover {
       color: var(--accent);
     }
@@ -94,7 +130,8 @@ const { home = false } = Astro.props;
       font-size: 0.8125rem;
     }
     .brand-star {
-      font-size: 1.5625rem;
+      width: 1.5625rem;
+      height: 1.5625rem;
     }
     .handle {
       font-size: 0.625rem;
@@ -103,15 +140,10 @@ const { home = false } = Astro.props;
       gap: 18px;
     }
     nav a {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
     }
   }
-  @media (max-width: 359px) {
-    .brand-star {
-      display: none;
-    }
-  }
-  @media (max-height: 650px) and (min-width: 768px) {
+  @media (max-height: 650px) and (min-width: 768px) and (pointer: fine) {
     .site-header {
       min-height: 72px;
       padding-block: 12px;

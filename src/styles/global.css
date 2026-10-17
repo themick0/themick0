@@ -28,6 +28,11 @@
 html {
   scroll-padding-top: 1.5rem;
 }
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
 body {
   margin: 0;
   background: var(--bg);
@@ -60,6 +65,9 @@ dd {
 a {
   color: inherit;
   text-underline-offset: 5px;
+}
+a:hover {
+  text-decoration: none;
 }
 button {
   font: inherit;

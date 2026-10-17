@@ -1,4 +1,4 @@
-name: Validate and deploy portfolio
+name: Build and deploy portfolio
 on:
   push:
   pull_request:
@@ -9,7 +9,7 @@ concurrency:
   group: portfolio-${{ github.ref }}
   cancel-in-progress: false
 jobs:
-  validate:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
           path: playwright-report/
           retention-days: 7
   deploy:
-    needs: validate
+    needs: build
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10

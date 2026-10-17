@@ -115,7 +115,8 @@ import { profile } from '../data/profile';
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 16px 24px;
-    padding-block: 24px clamp(66px, 9.5vh, 104px);
+    padding-block: 24px
+      clamp(66px, calc(var(--intro-height, 100svh) * 0.095), 104px);
   }
   .hero-proof {
     color: var(--muted);
@@ -237,7 +238,7 @@ import { profile } from '../data/profile';
       font-size: 1rem;
     }
   }
-  @media (max-height: 650px) and (min-width: 768px) {
+  @media (max-height: 650px) and (min-width: 768px) and (pointer: fine) {
     .hero {
       padding-block: 16px;
     }

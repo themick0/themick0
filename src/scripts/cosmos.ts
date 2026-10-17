@@ -95,15 +95,21 @@ function startScene(
   }
 
   function sizeScene() {
-    width = intro.clientWidth;
-    height = intro.clientHeight;
+    const nextWidth = intro.clientWidth;
+    const nextHeight = intro.clientHeight;
+    if (!nextWidth || !nextHeight) return;
     // Cap the backing store on large displays and use a lighter mobile renderer.
-    ratio = Math.min(
+    const nextRatio = Math.min(
       devicePixelRatio || 1,
       coarse.matches ? 1.2 : 1.5,
-      2400 / width,
-      1600 / height,
+      2400 / nextWidth,
+      1600 / nextHeight,
     );
+    if (width === nextWidth && height === nextHeight && ratio === nextRatio)
+      return;
+    width = nextWidth;
+    height = nextHeight;
+    ratio = nextRatio;
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
     meteorCanvas.width = canvas.width;
@@ -279,6 +285,7 @@ function startScene(
         brightness * 1.3,
         time,
         width < 768 ? 0.85 : 1.35,
+        Math.atan2(-height * 1.03, width * 0.75),
       );
       const second = clamp((time - 1.1) / 2.8);
       comet(
@@ -288,6 +295,7 @@ function startScene(
         Math.sin(second * Math.PI) * 0.38,
         time,
         0.45,
+        Math.atan2(-height * 0.45, width * 0.35),
       );
     }
 

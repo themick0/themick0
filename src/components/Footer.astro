@@ -1,11 +1,17 @@
 ---
 import { profile } from '../data/profile';
+import { pathTo } from '../lib/paths';
 ---
 
 <footer class="footer wrap">
-  <span>{profile.name} / {profile.handle}</span><span
-    >© {new Date().getFullYear()}</span
-  >
+  <span class="footer-identity">
+    <a href={pathTo('#top')}>{profile.name}</a>
+    <span aria-hidden="true">/</span>
+    <a href={profile.github} rel="me" aria-label={`${profile.handle} on GitHub`}
+      >{profile.handle}</a
+    >
+  </span>
+  <span>© {new Date().getFullYear()}</span>
 </footer>
 <style>
   .footer {
@@ -19,6 +25,27 @@ import { profile } from '../data/profile';
     color: var(--muted);
     font-size: 0.6875rem;
     letter-spacing: 0.025em;
+  }
+  .footer-identity {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 0.5em;
+  }
+  .footer-identity a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    text-decoration: none;
+    transition: color 160ms ease-out;
+  }
+  .footer-identity a:focus-visible {
+    color: var(--accent);
+  }
+  @media (hover: hover) {
+    .footer-identity a:hover {
+      color: var(--accent);
+    }
   }
   @media (max-width: 767px) {
     .footer {

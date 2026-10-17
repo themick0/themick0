@@ -1,6 +1,6 @@
 # Shared context for all roles
 
-Updated: October 16, 2026. This file reflects decisions made in the conversation up to this date; Peter's newer instructions take precedence.
+Updated: October 17, 2026. This file reflects decisions made in the conversation up to this date; Peter's newer instructions take precedence.
 
 ## Person and purpose
 
@@ -46,11 +46,13 @@ A static Astro + TypeScript application has been implemented from [Cosmos](../..
 
 Peter requested keeping the application, README, role instructions, and Cosmos source. Other concepts, early prototypes, plans, archives, and reports have been removed. AI instructions now live in `ai/roles/`, with repository rules in `ai/rules/`. The retained Cosmos prototype is the application's visual reference; its [description](../../concepts/cosmos/README.md) documents the design and motion.
 
-Home page order: large Senior Software Engineer heading → About → Projects → Let’s talk. Full-Stack Engineering comes first in the specialization line. About covers full-stack applications, new and existing products, responsibility for backend and UI, and recent identity/DeFi work. Do not reintroduce repeated experience duration in About, vague system integrations, or the rejected copy about transitioning from frontend.
+Home page order: large Senior Software Engineer heading → My work → About → Let’s talk. The project section and its main navigation link are labeled “My work”. Full-Stack Engineering comes first in the specialization line. About covers full-stack applications, new and existing products, responsibility for backend and UI, and recent identity/DeFi work. Do not reintroduce repeated experience duration in About, vague system integrations, or the rejected copy about transitioning from frontend.
 
-The design uses a dark background, cool blue and lavender highlights, a planet, stars, and comets. The pointer gently changes the camera direction; there are no particles attached to the cursor. Motion continues without mouse input, while reduced motion provides a static scene. There is no pause/play button, at Peter's explicit request.
+The design uses a dark background, cool blue and lavender highlights, a planet, stars, and comets. The pointer gently changes the camera direction; there are no particles attached to the cursor. Motion continues without mouse input, while reduced motion provides a static scene. Opening comet tails follow their screen-space flight direction at every aspect ratio. Section links use native smooth scrolling unless reduced motion is requested. On touch devices, the opening's minimum height stays stable during browser toolbar changes and adapts when the viewport width changes. There is no pause/play button, at Peter's explicit request.
 
-Projects open on separate pages. Contacts use ordinary links. The production domain is `https://themick0.com/`; indexing is configured through `SITE_URL` and `SITE_INDEXABLE`. Nginx hosting and GitHub Actions deployment are being configured.
+Projects open on separate pages. Contacts use ordinary links. The production domain is `https://themick0.com/`; indexing is configured through `SITE_URL` and `SITE_INDEXABLE`. The site is deployed through GitHub Actions and served by Nginx.
+
+In the header and footer, Peter Mikheev links to the top of the home page, while themick0 links to the GitHub profile with hover and keyboard focus states. Links must not have text underlines on hover anywhere on the site. The header star is an inline SVG so it renders consistently on mobile and desktop.
 
 ## Verified projects
 
