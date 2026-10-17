@@ -1,0 +1,257 @@
+---
+interface Props {
+  side: 'left' | 'right';
+}
+
+const { side } = Astro.props;
+const glowId = `cluster-glow-${side}`;
+let seed = side === 'left' ? 731 : 1949;
+const random = () => {
+  seed = (seed * 1664525 + 1013904223) >>> 0;
+  return seed / 4294967296;
+};
+
+// Keep the two fields distinct and stable across builds without client-side work.
+const stars = Array.from({ length: 112 }, (_, index) => {
+  const angle = random() * Math.PI * 2;
+  const distance = Math.pow(random(), 0.65);
+  const x = Math.cos(angle) * distance;
+  const y = Math.sin(angle) * distance;
+  return {
+    x: (252 + x * 208 + y * 48).toFixed(2),
+    y: (310 + y * 274).toFixed(2),
+    radius: (0.4 + random() * 0.75).toFixed(2),
+    opacity: ((0.2 + random() * 0.55) * (1 - distance * 0.7)).toFixed(2),
+    color: random() > 0.25 ? '#c2dcff' : '#e1d4ed',
+    bright: index % 23 === 0,
+    layer: index % 3 === 0 ? 1 : 0,
+    twinkle: index % 7 === 0 || index % 23 === 0,
+    duration: `${6 + (index % 5) * 1.3}s`,
+    delay: `${-((index * 1.7) % 13)}s`,
+  };
+});
+---
+
+<div class:list={['star-cluster', `star-cluster-${side}`]} aria-hidden="true">
+  <svg viewBox="0 0 620 620" fill="none" focusable="false">
+    <defs>
+      <radialGradient id={glowId}>
+        <stop stop-color="#c3e7ff" stop-opacity="0.5"></stop>
+        <stop offset="0.16" stop-color="#8cbbef" stop-opacity="0.2"></stop>
+        <stop offset="1" stop-color="#7099dd" stop-opacity="0"></stop>
+      </radialGradient>
+    </defs>
+    {
+      [0, 1].map((layer) => (
+        <g
+          class:list={['star-parallax', { 'star-parallax-near': layer === 1 }]}
+        >
+          <g class:list={['star-layer', { 'star-layer-near': layer === 1 }]}>
+            {stars
+              .filter((star) => star.layer === layer)
+              .map((star) => (
+                <g
+                  class:list={{ 'star-twinkle': star.twinkle }}
+                  opacity={star.opacity}
+                  style={
+                    star.twinkle
+                      ? {
+                          '--star-light': star.opacity,
+                          '--twinkle-duration': star.duration,
+                          '--twinkle-delay': star.delay,
+                        }
+                      : undefined
+                  }
+                >
+                  {star.bright && (
+                    <circle
+                      cx={star.x}
+                      cy={star.y}
+                      r="13"
+                      fill={`url(#${glowId})`}
+                    />
+                  )}
+                  <circle
+                    cx={star.x}
+                    cy={star.y}
+                    r={star.bright ? 1.4 : star.radius}
+                    fill={star.color}
+                  />
+                </g>
+              ))}
+          </g>
+        </g>
+      ))
+    }
+  </svg>
+</div>
+
+<script>
+  const clusters = document.querySelectorAll<HTMLElement>('.star-cluster');
+  const visible = new Set<HTMLElement>();
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let scrollFrame = 0;
+
+  // Update visible fields once per scroll frame; CSS handles drift and easing.
+  if ('IntersectionObserver' in window) {
+    const renderScroll = () => {
+      scrollFrame = 0;
+      if (document.hidden || reducedMotion.matches) return;
+      const viewportHeight = window.innerHeight;
+      const distance = window.innerWidth < 768 ? 14 : 24;
+      const offsets = Array.from(visible, (cluster) => {
+        const bounds = cluster.getBoundingClientRect();
+        const progress =
+          (viewportHeight - bounds.top * 2 - bounds.height) /
+          (viewportHeight + bounds.height);
+        return {
+          cluster,
+          offset: Math.max(-1, Math.min(1, progress)) * distance,
+        };
+      });
+      offsets.forEach(({ cluster, offset }) => {
+        cluster.style.setProperty('--cluster-scroll', `${offset.toFixed(2)}px`);
+      });
+    };
+    const scheduleScroll = () => {
+      if (
+        !scrollFrame &&
+        visible.size &&
+        !document.hidden &&
+        !reducedMotion.matches
+      ) {
+        scrollFrame = requestAnimationFrame(renderScroll);
+      }
+    };
+    const update = () => {
+      if (document.hidden || reducedMotion.matches) {
+        cancelAnimationFrame(scrollFrame);
+        scrollFrame = 0;
+      }
+      clusters.forEach((cluster) => {
+        cluster.toggleAttribute(
+          'data-active',
+          visible.has(cluster) && !document.hidden,
+        );
+        if (reducedMotion.matches)
+          cluster.style.removeProperty('--cluster-scroll');
+      });
+      scheduleScroll();
+    };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const cluster = entry.target as HTMLElement;
+        if (entry.isIntersecting) visible.add(cluster);
+        else visible.delete(cluster);
+      });
+      update();
+    });
+    clusters.forEach((cluster) => observer.observe(cluster));
+    document.addEventListener('visibilitychange', update);
+    reducedMotion.addEventListener('change', update);
+    window.addEventListener('scroll', scheduleScroll, { passive: true });
+    window.addEventListener('resize', scheduleScroll, { passive: true });
+    const content = document.querySelector('.home-content');
+    if (content) new ResizeObserver(scheduleScroll).observe(content);
+  }
+</script>
+
+<style>
+  .star-cluster {
+    position: absolute;
+    z-index: -1;
+    inset-inline: calc(-1 * var(--gutter));
+    top: 50%;
+    height: 620px;
+    transform: translateY(-50%);
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+  }
+  .star-cluster svg {
+    position: absolute;
+    top: 50%;
+    left: -100px;
+    width: min(620px, 58vw);
+    height: auto;
+    transform: translateY(-50%);
+    background: radial-gradient(
+      ellipse at 37% 48%,
+      #29397414,
+      #171f4308 30%,
+      transparent 65%
+    );
+  }
+  .star-cluster-right {
+    top: 64px;
+  }
+  .star-cluster-right svg {
+    right: -100px;
+    left: auto;
+    transform: translateY(-50%) scaleX(-1);
+  }
+  @keyframes cluster-drift {
+    from {
+      transform: translate(-3px, 4px);
+    }
+    to {
+      transform: translate(5px, -7px);
+    }
+  }
+  @keyframes star-twinkle {
+    from {
+      opacity: calc(var(--star-light) * 0.55);
+    }
+    to {
+      opacity: calc(var(--star-light) * 1.45);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .star-parallax {
+      transform: translateY(calc(var(--cluster-scroll, 0px) * 0.55));
+      transition: transform 180ms ease-out;
+    }
+    .star-parallax-near {
+      transform: translateY(var(--cluster-scroll, 0px));
+    }
+    .star-layer {
+      animation: cluster-drift 28s ease-in-out infinite alternate paused;
+    }
+    .star-layer-near {
+      animation-duration: 19s;
+      animation-direction: alternate-reverse;
+      animation-delay: -8s;
+    }
+    .star-cluster-right .star-layer {
+      animation-delay: -12s;
+    }
+    .star-twinkle {
+      animation: star-twinkle var(--twinkle-duration) ease-in-out
+        var(--twinkle-delay) infinite alternate paused;
+    }
+    .star-cluster[data-active] :is(.star-layer, .star-twinkle) {
+      animation-play-state: running;
+    }
+  }
+  @media (max-width: 767px) {
+    .star-cluster {
+      opacity: 0.6;
+    }
+    .star-cluster svg {
+      left: -150px;
+      width: 360px;
+    }
+    .star-cluster-right {
+      top: 32px;
+    }
+    .star-cluster-right svg {
+      right: -150px;
+      left: auto;
+    }
+  }
+  @media (forced-colors: active), print {
+    .star-cluster {
+      display: none;
+    }
+  }
+</style>

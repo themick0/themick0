@@ -293,6 +293,78 @@ test('motion respects live reduced-motion changes and stops offscreen', async ({
   await expectStill();
 });
 
+test('star clusters react to scroll, animate only while visible and respect reduced motion', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('./');
+  await page.getByRole('button', { name: 'More projects' }).click();
+  await page.locator('#project-davos').scrollIntoViewIfNeeded();
+  const cluster = page.locator('.star-cluster-left');
+  const sample = () =>
+    cluster.evaluate((element) => ({
+      position: getComputedStyle(element.querySelector('.star-layer')!)
+        .transform,
+      light: getComputedStyle(element.querySelector('.star-twinkle')!).opacity,
+    }));
+  const states = () =>
+    cluster.evaluate((element) =>
+      element
+        .getAnimations({ subtree: true })
+        .map((animation) => animation.playState),
+    );
+  const before = await sample();
+  await expect
+    .poll(async () => (await sample()).position)
+    .not.toBe(before.position);
+  await expect.poll(async () => (await sample()).light).not.toBe(before.light);
+
+  const parallax = () =>
+    cluster.evaluate((element) =>
+      Array.from(
+        element.querySelectorAll('.star-parallax'),
+        (layer) => new DOMMatrix(getComputedStyle(layer).transform).m42,
+      ),
+    );
+  await cluster.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    scrollTo({
+      top: scrollY + bounds.top + bounds.height / 2 - innerHeight / 2,
+      behavior: 'instant',
+    });
+  });
+  await expect.poll(async () => (await parallax())[1]).toBeCloseTo(0, 1);
+  await page.evaluate(() => scrollBy({ top: 200, behavior: 'instant' }));
+  await expect.poll(async () => (await parallax())[1]).toBeGreaterThan(2);
+  const [far, near] = await parallax();
+  expect(far).toBeGreaterThan(0);
+  expect(far).toBeLessThan(near);
+  expect(near).toBeLessThanOrEqual(24);
+  await page.evaluate(() => scrollBy({ top: -200, behavior: 'instant' }));
+  await expect.poll(async () => (await parallax())[1]).toBeCloseTo(0, 1);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(states).toEqual([]);
+  expect((await sample()).position).toBe('none');
+  await page.evaluate(() => scrollBy({ top: 200, behavior: 'instant' }));
+  expect(await parallax()).toEqual([0, 0]);
+
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect
+    .poll(async () => (await states()).includes('running'))
+    .toBe(true);
+  await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+  await expect(cluster).not.toBeInViewport();
+  await expect
+    .poll(async () => {
+      const animations = await states();
+      return (
+        animations.length > 0 && animations.every((state) => state === 'paused')
+      );
+    })
+    .toBe(true);
+});
+
 test('CSS scene and content survive unavailable Canvas', async ({ page }) => {
   await page.addInitScript(() => {
     HTMLCanvasElement.prototype.getContext = () => null;

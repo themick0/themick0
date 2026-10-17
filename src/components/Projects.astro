@@ -2,6 +2,7 @@
 import { projects } from '../data/projects';
 import { pathTo } from '../lib/paths';
 import ProjectSymbol from './ProjectSymbol.astro';
+import StarCluster from './StarCluster.astro';
 ---
 
 <section class="work" id="work" aria-labelledby="work-title">
@@ -9,7 +10,7 @@ import ProjectSymbol from './ProjectSymbol.astro';
   <p id="external-project-link-hint" hidden>Opens in a new tab.</p>
   <ul class="project-list" id="project-list" role="list" data-project-list>
     {
-      projects.map((project) => {
+      projects.map((project, index) => {
         const href = project.caseStudy
           ? pathTo(`projects/${project.slug}/`)
           : project.website;
@@ -17,7 +18,11 @@ import ProjectSymbol from './ProjectSymbol.astro';
         const Row = href ? 'a' : 'div';
 
         return (
-          <li id={`project-${project.slug}`}>
+          <li
+            id={`project-${project.slug}`}
+            class:list={{ 'cluster-anchor': index === 4 }}
+          >
+            {index === 4 && <StarCluster side="left" />}
             <Row
               class:list={['project-row', { 'project-link': Boolean(href) }]}
               href={href}
@@ -135,6 +140,9 @@ import ProjectSymbol from './ProjectSymbol.astro';
   }
   .project-list li {
     border-bottom: 1px solid #273143;
+  }
+  .cluster-anchor {
+    position: relative;
   }
   .project-row {
     position: relative;

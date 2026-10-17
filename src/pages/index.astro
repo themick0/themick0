@@ -17,7 +17,7 @@ import { profile } from '../data/profile';
     <Header home />
     <main id="main" tabindex="-1">
       <Hero />
-      <div class="wrap">
+      <div class="wrap home-content">
         <Projects />
         <About />
         <Contact />
@@ -74,6 +74,9 @@ import { profile } from '../data/profile';
     grid-area: 1 / 1 / 5;
     grid-template-rows: subgrid;
     min-width: 0;
+  }
+  .home-content {
+    isolation: isolate;
   }
   @media (max-width: 767px) {
     .home::before {

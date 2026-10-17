@@ -1,4 +1,9 @@
+---
+import StarCluster from './StarCluster.astro';
+---
+
 <section class="about" id="about" aria-labelledby="about-title">
+  <StarCluster side="right" />
   <h2 class="section-heading" id="about-title">About</h2>
   <div class="about-copy">
     <p class="about-lead">
@@ -17,6 +22,7 @@
 </section>
 <style>
   .about {
+    position: relative;
     padding-block: 92px 84px;
     border-bottom: 1px solid #7c9cb72e;
   }
