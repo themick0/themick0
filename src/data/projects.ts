@@ -117,7 +117,7 @@ export const projects: Project[] = [
   {
     slug: 'neuraverse',
     name: 'Neuraverse',
-    context: 'Browser game · Ankr Labs',
+    context: 'Browser web3 game · Ankr Labs',
     summary:
       'Replaced the React game layer with Pixi.js to improve performance and stability. Delivered the implementation in two weeks.',
     symbol: 'rocket',

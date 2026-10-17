@@ -1,5 +1,6 @@
 ---
 import StarCluster from './StarCluster.astro';
+import DestroyerArrival from './DestroyerArrival.astro';
 ---
 
 <section class="about" id="about" aria-labelledby="about-title">
@@ -18,21 +19,26 @@ import StarCluster from './StarCluster.astro';
       design AI workflows around measurable business outcomes and clear quality
       standards.
     </p>
+    <DestroyerArrival />
   </div>
 </section>
 <style>
   .about {
     position: relative;
-    padding-block: 92px 84px;
+    padding-block: 92px 120px;
     border-bottom: 1px solid #7c9cb72e;
   }
   .section-heading {
     margin-bottom: 28px;
   }
   .about-copy {
-    max-width: 1000px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    column-gap: clamp(28px, 4vw, 56px);
   }
   .about-lead {
+    grid-column: 1 / -1;
+    max-width: 1000px;
     font-size: clamp(1.75rem, 3vw, 2.75rem);
     line-height: 1.3;
     letter-spacing: -0.035em;
@@ -41,6 +47,7 @@ import StarCluster from './StarCluster.astro';
     display: block;
   }
   .about-detail {
+    grid-column: 1;
     max-width: 67ch;
     margin-top: 26px;
     color: var(--muted);
@@ -49,7 +56,10 @@ import StarCluster from './StarCluster.astro';
   }
   @media (max-width: 767px) {
     .about {
-      padding-block: 64px;
+      padding-block: 64px 88px;
+    }
+    .about-copy {
+      grid-template-columns: minmax(0, 1fr);
     }
     .about-lead {
       font-size: clamp(1.6875rem, 6.9vw, 2.375rem);

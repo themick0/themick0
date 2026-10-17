@@ -365,6 +365,208 @@ test('star clusters react to scroll, animate only while visible and respect redu
     .toBe(true);
 });
 
+test('the destroyer fleet follows closely in order and pauses offscreen', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.addInitScript(() => {
+    const sequence: string[] = [];
+    const starts: number[] = [];
+    const record = (event: AnimationEvent) => {
+      if (event.animationName === 'destroyer-arrival') {
+        const ship = (event.target as HTMLElement).closest<HTMLElement>(
+          '[data-destroyer-ship]',
+        );
+        sequence.push(`${event.type}:${ship?.dataset.destroyerShip}`);
+        document.documentElement.dataset.destroyerSequence =
+          JSON.stringify(sequence);
+        if (event.type === 'animationstart') {
+          // WebKit may dispatch nearby events together; use the animation timeline.
+          const animation = (event.target as HTMLElement)
+            .getAnimations()
+            .find(
+              (item) =>
+                (item as CSSAnimation).animationName === 'destroyer-arrival',
+            )!;
+          starts.push(
+            Number(animation.startTime) +
+              (animation.effect!.getTiming().delay ?? 0),
+          );
+          document.documentElement.dataset.destroyerStartTimes =
+            JSON.stringify(starts);
+        }
+      }
+    };
+    document.addEventListener('animationstart', record);
+    document.addEventListener('animationend', record);
+  });
+  await page.goto('./');
+  const scene = page.locator('[data-destroyer]');
+  const lead = scene.locator('[data-destroyer-ship="lead"]');
+  const image = lead.locator('img');
+  await expect(scene).toHaveAttribute('data-state', 'waiting');
+  await expect(scene.locator('[data-destroyer-ship]')).toHaveCount(3);
+  await scene.locator('.destroyer-viewport').scrollIntoViewIfNeeded();
+  await expect(scene).toHaveAttribute('data-state', 'settled', {
+    timeout: 12000,
+  });
+  const sequence = (await page
+    .locator('html')
+    .getAttribute('data-destroyer-sequence'))!;
+  const events = JSON.parse(sequence) as string[];
+  expect(events.slice(0, 3)).toEqual([
+    'animationstart:lead',
+    'animationstart:upper',
+    'animationstart:lower',
+  ]);
+  expect(events.slice(3).sort()).toEqual([
+    'animationend:lead',
+    'animationend:lower',
+    'animationend:upper',
+  ]);
+  const starts = await page
+    .locator('html')
+    .evaluate(
+      (element) =>
+        JSON.parse(element.dataset.destroyerStartTimes ?? '[]') as number[],
+    );
+  expect(starts).toHaveLength(3);
+  for (let index = 1; index < starts.length; index++) {
+    expect(starts[index] - starts[index - 1]).toBeGreaterThan(0);
+    expect(starts[index] - starts[index - 1]).toBeLessThan(600);
+  }
+  await expect(image).toHaveJSProperty('complete', true);
+  for (const vessel of await scene.locator('.destroyer-vessel').all())
+    await expect(vessel).toHaveCSS('opacity', '1');
+  const states = () =>
+    scene.evaluate((element) =>
+      element
+        .getAnimations({ subtree: true })
+        .map((animation) => animation.playState),
+    );
+  await expect
+    .poll(async () => (await states()).includes('running'))
+    .toBe(true);
+  const drift = () =>
+    lead
+      .locator('.destroyer-hover')
+      .evaluate((element) => getComputedStyle(element).transform);
+  const initialDrift = await drift();
+  await expect.poll(drift).not.toBe(initialDrift);
+  await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+  await expect
+    .poll(async () => (await states()).every((state) => state === 'paused'))
+    .toBe(true);
+  await image.scrollIntoViewIfNeeded();
+  await expect
+    .poll(async () => (await states()).includes('running'))
+    .toBe(true);
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-destroyer-sequence',
+    sequence,
+  );
+});
+
+test('the destroyer enters diagonally from the page edge after a delay and brakes smoothly', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('./');
+  const scene = page.locator('[data-destroyer]');
+  await scene.locator('.destroyer-viewport').scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      scene.evaluate((element) =>
+        element
+          .getAnimations({ subtree: true })
+          .some(
+            (animation) =>
+              (animation as CSSAnimation).animationName === 'destroyer-arrival',
+          ),
+      ),
+    )
+    .toBe(true);
+  const flight = await scene.evaluate((element) => {
+    const animation = element
+      .getAnimations({ subtree: true })
+      .find(
+        (item) => (item as CSSAnimation).animationName === 'destroyer-arrival',
+      )!;
+    animation.pause();
+    const timing = animation.effect!.getTiming();
+    const delay = timing.delay ?? 0;
+    const vessel = element.querySelector('.destroyer-vessel')!;
+    const sample = (time: number) => {
+      animation.currentTime = time;
+      const matrix = new DOMMatrix(getComputedStyle(vessel).transform);
+      return {
+        x: matrix.m41,
+        y: matrix.m42,
+        left: vessel.getBoundingClientRect().left,
+        overflow: document.documentElement.scrollWidth - innerWidth,
+      };
+    };
+    return {
+      delay,
+      initial: sample(0),
+      duringDelay: sample(delay / 2),
+      frames: [0, 0.1, 0.2, 0.5, 0.8, 0.98].map((progress) =>
+        sample(delay + Number(timing.duration) * progress),
+      ),
+      pageEdge: document.documentElement.clientWidth,
+      clipEdge: element
+        .querySelector('.destroyer-flight-clip')!
+        .getBoundingClientRect().right,
+    };
+  });
+  expect(flight.delay).toBeGreaterThanOrEqual(300);
+  expect(flight.delay).toBeLessThanOrEqual(1500);
+  expect(flight.initial.left).toBeGreaterThan(flight.pageEdge);
+  expect(flight.duringDelay).toEqual(flight.initial);
+  expect(Math.abs(flight.clipEdge - flight.pageEdge)).toBeLessThan(1);
+  for (let index = 1; index < flight.frames.length; index++) {
+    expect(flight.frames[index].x).toBeLessThan(flight.frames[index - 1].x);
+    expect(flight.frames[index].y).toBeGreaterThan(flight.frames[index - 1].y);
+  }
+  const [start, , braking, , slow, end] = flight.frames;
+  expect(Math.abs(start.y / start.x)).toBeGreaterThan(0.2);
+  expect(Math.abs(start.y / start.x)).toBeLessThan(0.35);
+  expect(start.x - braking.x).toBeGreaterThan(start.x * 0.65);
+  expect(slow.x - end.x).toBeLessThan(start.x * 0.05);
+  expect(flight.frames.every((frame) => frame.overflow <= 1)).toBe(true);
+});
+
+test('the destroyer stays readable and still with reduced motion', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('./');
+  const scene = page.locator('[data-destroyer]');
+  await scene.locator('.destroyer-viewport').scrollIntoViewIfNeeded();
+  await expect(scene.locator('img')).toHaveCount(3);
+  for (const image of await scene.locator('img').all()) {
+    await expect(image).toHaveJSProperty('complete', true);
+    await expect
+      .poll(() =>
+        image.evaluate((element: HTMLImageElement) => element.naturalWidth),
+      )
+      .toBeGreaterThan(0);
+  }
+  await expect(scene).toHaveAttribute('data-state', 'settled');
+  for (const vessel of await scene.locator('.destroyer-vessel').all())
+    await expect(vessel).toHaveCSS('opacity', '1');
+  const animations = () =>
+    scene.evaluate(
+      (element) => element.getAnimations({ subtree: true }).length,
+    );
+  await expect.poll(animations).toBe(0);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect.poll(animations).toBeGreaterThan(0);
+  await expect(scene).toHaveAttribute('data-state', 'settled');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(animations).toBe(0);
+});
+
 test('CSS scene and content survive unavailable Canvas', async ({ page }) => {
   await page.addInitScript(() => {
     HTMLCanvasElement.prototype.getContext = () => null;

@@ -1,0 +1,342 @@
+---
+import { getImage } from 'astro:assets';
+import destroyer from '../assets/imperial-destroyer-abstract.png';
+
+const image = await getImage({
+  src: destroyer,
+  width: 1000,
+  format: 'webp',
+  quality: 85,
+});
+const ships = ['lead', 'upper', 'lower'];
+---
+
+<div class="destroyer-scene" data-destroyer aria-hidden="true">
+  <div class="destroyer-viewport">
+    <div class="destroyer-flight-clip">
+      <div class="destroyer-flight-stage">
+        <div class="jump-glow"></div>
+        {
+          ships.map((ship) => (
+            <div class="destroyer-ship" data-destroyer-ship={ship}>
+              <div class="destroyer-hover">
+                <div class="destroyer-vessel">
+                  <img
+                    src={image.src}
+                    width={image.attributes.width}
+                    height={image.attributes.height}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const scene = document.querySelector<HTMLElement>('[data-destroyer]');
+  const viewport = scene?.querySelector<HTMLElement>('.destroyer-viewport');
+  const image = scene?.querySelector<HTMLImageElement>('img');
+  if (scene && viewport && image && 'IntersectionObserver' in window) {
+    const ships = [
+      ...scene.querySelectorAll<HTMLElement>('[data-destroyer-ship]'),
+    ];
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+    let ready = false;
+    const setFleetState = (state: 'waiting' | 'arriving' | 'settled') => {
+      scene.dataset.state = state;
+      ships.forEach((ship) => (ship.dataset.state = state));
+    };
+    setFleetState(reduced.matches ? 'settled' : 'waiting');
+
+    const measureFlight = () => {
+      const bounds = viewport.getBoundingClientRect();
+      const pageWidth = document.documentElement.clientWidth;
+      const entryX = pageWidth - bounds.left + 24;
+      const rotation =
+        (parseFloat(
+          getComputedStyle(scene).getPropertyValue('--destroyer-rotation'),
+        ) *
+          Math.PI) /
+        180;
+      // Follow the source image's bow direction after its visual rotation.
+      const flightSlope = Math.tan(Math.atan(0.44) - rotation);
+      const entries = ships.map((ship) => ({
+        ship,
+        x: pageWidth - ship.getBoundingClientRect().left + 24,
+      }));
+      scene.style.setProperty(
+        '--destroyer-scrollbar-width',
+        `${window.innerWidth - pageWidth}px`,
+      );
+      scene.style.setProperty('--destroyer-entry-x', `${entryX}px`);
+      scene.style.setProperty(
+        '--destroyer-entry-rise',
+        `${entryX * flightSlope}px`,
+      );
+      entries.forEach(({ ship, x }) => {
+        ship.style.setProperty('--destroyer-entry-x', `${x}px`);
+        ship.style.setProperty(
+          '--destroyer-entry-rise',
+          `${x * flightSlope}px`,
+        );
+      });
+    };
+    measureFlight();
+    new ResizeObserver(measureFlight).observe(viewport);
+    window.addEventListener('resize', measureFlight, { passive: true });
+
+    const update = () => {
+      const active = visible && !document.hidden;
+      scene.toggleAttribute('data-active', active);
+      if (reduced.matches) setFleetState('settled');
+      else if (active && ready && scene.dataset.state === 'waiting') {
+        measureFlight();
+        setFleetState('arriving');
+      }
+    };
+    const prepare = async () => {
+      try {
+        await image.decode();
+      } catch {
+        // Failed decorative images must not leave an empty broken-image frame.
+      }
+      if (!image.naturalWidth) {
+        scene.hidden = true;
+        return;
+      }
+      ready = true;
+      update();
+    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        visible =
+          entries[0].isIntersecting && entries[0].intersectionRatio >= 0.35;
+        update();
+      },
+      { threshold: 0.35 },
+    );
+    observer.observe(viewport);
+    if (image.complete) void prepare();
+    else image.addEventListener('load', () => void prepare(), { once: true });
+    image.addEventListener(
+      'error',
+      () => {
+        scene.hidden = true;
+      },
+      { once: true },
+    );
+    scene.addEventListener('animationend', (event) => {
+      if (event.animationName !== 'destroyer-arrival') return;
+      const ship = (event.target as HTMLElement).closest<HTMLElement>(
+        '[data-destroyer-ship]',
+      );
+      if (ship) ship.dataset.state = 'settled';
+      if (ships.every((item) => item.dataset.state === 'settled'))
+        scene.dataset.state = 'settled';
+    });
+    document.addEventListener('visibilitychange', update);
+    reduced.addEventListener('change', update);
+  }
+</script>
+
+<style>
+  .destroyer-scene {
+    --destroyer-delay: 650ms;
+    --destroyer-rotation: 8deg;
+    --destroyer-play-state: paused;
+    --destroyer-fleet-shift: 32px;
+    /* Match the centered .wrap margin immediately during resizing and text zoom. */
+    --destroyer-edge-gap: max(
+      var(--gutter),
+      calc((100vw - var(--destroyer-scrollbar-width, 0px) - 82.5rem) / 2)
+    );
+    position: relative;
+    grid-column: 2;
+    grid-row: 2;
+    height: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+  .destroyer-scene[data-active] {
+    --destroyer-play-state: running;
+  }
+  .destroyer-viewport {
+    position: absolute;
+    top: -170px;
+    inset-inline: 0;
+    aspect-ratio: 3 / 2;
+    isolation: isolate;
+  }
+  /* Clip only at the page edge, keeping the flight outside the content column visible. */
+  .destroyer-flight-clip {
+    position: absolute;
+    top: calc(-1 * var(--destroyer-entry-rise, 0px) - 160px);
+    bottom: -160px;
+    left: calc(-24px - var(--destroyer-fleet-shift));
+    right: calc(-1 * var(--destroyer-edge-gap, 0px));
+    overflow: hidden;
+  }
+  .destroyer-flight-stage {
+    position: absolute;
+    top: calc(var(--destroyer-entry-rise, 0px) + 160px);
+    bottom: 160px;
+    left: calc(24px + var(--destroyer-fleet-shift));
+    right: var(--destroyer-edge-gap, 0px);
+  }
+  .destroyer-ship {
+    --destroyer-duration: 1.8s;
+    --destroyer-drift-duration: 8s;
+    --destroyer-drift-x: -10px;
+    --destroyer-drift-y: 6px;
+    --destroyer-opacity: 0.84;
+    --destroyer-brightness: 0.82;
+    position: absolute;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    transform: translateX(calc(-1 * var(--destroyer-fleet-shift)));
+  }
+  [data-destroyer-ship='lead'] {
+    inset: 0;
+    z-index: 2;
+  }
+  [data-destroyer-ship='upper'] {
+    --destroyer-delay: 850ms;
+    --destroyer-drift-duration: 10s;
+    --destroyer-drift-x: -4px;
+    --destroyer-drift-y: 3px;
+    --destroyer-opacity: 0.67;
+    --destroyer-brightness: 0.78;
+    top: -32%;
+    right: 8%;
+    width: 42%;
+    z-index: 1;
+  }
+  [data-destroyer-ship='lower'] {
+    --destroyer-delay: 1050ms;
+    --destroyer-drift-duration: 11s;
+    --destroyer-drift-x: -3px;
+    --destroyer-drift-y: 2px;
+    --destroyer-opacity: 0.7;
+    --destroyer-brightness: 0.8;
+    top: 72%;
+    right: calc(12px - var(--destroyer-edge-gap));
+    width: 52%;
+    z-index: 0;
+  }
+  .destroyer-hover,
+  .destroyer-vessel {
+    width: 100%;
+    height: 100%;
+  }
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: var(--destroyer-opacity);
+    filter: brightness(var(--destroyer-brightness)) saturate(0.7);
+    transform: rotate(var(--destroyer-rotation));
+  }
+  .jump-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% + var(--destroyer-edge-gap, 0px));
+    height: 100%;
+    opacity: 0;
+  }
+  .jump-glow {
+    background: radial-gradient(
+      ellipse at 96% 25%,
+      #c3e7ff66,
+      #7d9fe51a 12%,
+      transparent 36%
+    );
+  }
+  @keyframes destroyer-arrival {
+    from {
+      transform: translate3d(
+          var(--destroyer-entry-x, 100vw),
+          calc(-1 * var(--destroyer-entry-rise, 0px)),
+          0
+        )
+        scale(0.96);
+    }
+    to {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+  @keyframes jump-glow {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    28% {
+      opacity: 0.7;
+    }
+  }
+  @keyframes destroyer-drift {
+    from {
+      transform: translate(0, 0);
+    }
+    to {
+      transform: translate(var(--destroyer-drift-x), var(--destroyer-drift-y))
+        rotate(-0.6deg);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .destroyer-ship[data-state='waiting'] .destroyer-vessel {
+      opacity: 0;
+    }
+    .destroyer-ship[data-state='arriving'] .destroyer-vessel {
+      transform-origin: 50% 50%;
+      will-change: transform;
+      animation: destroyer-arrival var(--destroyer-duration)
+        cubic-bezier(0.08, 0.86, 0.16, 1) var(--destroyer-delay) both
+        var(--destroyer-play-state);
+    }
+    [data-state='arriving'] .jump-glow {
+      animation: jump-glow 650ms ease-out var(--destroyer-delay) both
+        var(--destroyer-play-state);
+    }
+    .destroyer-ship[data-state='settled'] .destroyer-hover {
+      animation: destroyer-drift var(--destroyer-drift-duration) ease-in-out
+        infinite alternate var(--destroyer-play-state);
+    }
+  }
+  @media (max-width: 1023px) {
+    .destroyer-scene {
+      --destroyer-fleet-shift: 12px;
+    }
+    .destroyer-viewport {
+      top: -122px;
+    }
+  }
+  @media (max-width: 767px) {
+    .destroyer-scene {
+      grid-column: 1;
+      grid-row: auto;
+      justify-self: end;
+      width: min(280px, 85%);
+      height: auto;
+      aspect-ratio: 3 / 2;
+      margin-block: 88px 0;
+    }
+    .destroyer-viewport {
+      top: -24px;
+    }
+  }
+  @media (forced-colors: active), print {
+    .destroyer-scene {
+      display: none;
+    }
+  }
+</style>
