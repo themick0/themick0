@@ -287,7 +287,20 @@ test('View projects keeps the URL clean and reload respects the latest scroll po
   await expect(page).toHaveURL(address);
   expect(await page.evaluate(() => history.length)).toBe(historyLength);
 
-  await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+  // WebKit can report scrollY = 0 before its saved scroll position updates.
+  // Wait for the scroll event and a rendered frame before reloading.
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        const onScroll = () => {
+          if (scrollY !== 0) return;
+          window.removeEventListener('scroll', onScroll);
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        };
+        window.addEventListener('scroll', onScroll);
+        scrollTo({ top: 0, behavior: 'instant' });
+      }),
+  );
   await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
   await page.reload();
   await expect(page).toHaveURL(address);
