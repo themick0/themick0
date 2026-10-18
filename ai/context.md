@@ -2,7 +2,7 @@
 
 Updated: October 18, 2026. Peter's latest instructions take precedence.
 
-This document covers the public website and its maintenance. Optional local working notes are handled according to [AGENTS.md](../../AGENTS.md); they are not required to build or maintain the application.
+This document covers the public website and its maintenance. Optional local working notes are handled according to [AGENTS.md](../AGENTS.md); they are not required to build or maintain the application.
 
 ## Person and purpose
 
@@ -10,7 +10,7 @@ This document covers the public website and its maintenance. Optional local work
 - The website supports employment opportunities and project collaboration with founders, product teams, engineering leaders, and recruiters.
 - The home page presents **Full-Stack Engineering**, **DeFi Solutions**, and **AI Automation**.
 - Public experience includes more than eight years in software engineering, React, TypeScript, Node.js, backend APIs, SDKs, and production DeFi, wallet, and identity integrations.
-- Profile details, contacts, and the CV link live in [src/data/profile.ts](../../src/data/profile.ts). Project descriptions and destinations live in [src/data/projects.ts](../../src/data/projects.ts).
+- Profile details, contacts, and the CV link live in [src/data/profile.ts](../src/data/profile.ts). Project descriptions and destinations live in [src/data/projects.ts](../src/data/projects.ts).
 
 ## Content rules
 
@@ -20,7 +20,7 @@ This document covers the public website and its maintenance. Optional local work
 - Keep metrics tied to the specific measurement they describe; do not extrapolate them to unrelated outcomes.
 - Separate a service offer from evidence of completed work. A proposal is not a completed project or an approved decision.
 - Use current public sources and the owner's clarifications when a fact is missing. Do not infer personal preferences, availability, or employment terms.
-- Keep conversation history and personal working notes outside tracked documentation. Repository files follow the [English language rule](../rules/repository-language.md).
+- Keep conversation history and personal working notes outside tracked documentation. Repository files follow the [English language rule](rules/repository-language.md).
 
 ## Application and sources
 
@@ -82,7 +82,7 @@ Use the typed project data for exact public wording, image descriptions, and des
 
 ## Validation and scope
 
-Use the scripts in [package.json](../../package.json): `pnpm dev`, `pnpm format:check`, `pnpm build`, and `pnpm test`. The build runs Astro diagnostics and validates static HTML, links, headings, metadata, structured data, and assets. Browser tests use Chromium, Firefox, WebKit, and mobile emulation; emulation is not physical-device testing.
+Use the scripts in [package.json](../package.json): `pnpm dev`, `pnpm format:check`, `pnpm build`, and `pnpm test`. The build runs Astro diagnostics and validates static HTML, links, headings, metadata, structured data, and assets. Browser tests use Chromium, Firefox, WebKit, and mobile emulation; emulation is not physical-device testing.
 
 Run checks appropriate to the change and report actual results. Earlier successful runs do not establish that a later revision passes. Documentation-only changes do not require repeating unrelated browser scenarios.
 

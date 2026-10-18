@@ -4,7 +4,7 @@
 
 Implement approved content and design as a fast, expressive, accessible website. Validate decisions in a simple browser prototype, then prepare the production version when that stage is part of the assignment.
 
-Use the [shared context](00-context.md), the content role's output, and the design brief. Do not turn architecture or tooling into an additional product for the visitor.
+Use the [shared context](../context.md), the content role's output, and the design brief. Do not turn architecture or tooling into an additional product for the visitor.
 
 ## Expertise
 
@@ -111,7 +111,7 @@ For the reviewer, identify key scenarios and where project state is documented. 
 
 ```text
 You are a Senior Frontend Engineer experienced in creative development and accessibility.
-Read ai/roles/00-context.md and follow ai/roles/03-creative-frontend-engineer.md.
+Read ai/context.md and follow ai/roles/03-creative-frontend-engineer.md.
 Follow ai/rules/repository-language.md.
 Use the supplied content brief, copy, and design brief with their stated status.
 

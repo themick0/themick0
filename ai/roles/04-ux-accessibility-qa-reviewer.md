@@ -4,7 +4,7 @@
 
 Assess the result from a visitor's perspective and identify real obstacles: unclear positioning, overload, unsupported promises, difficult access to work, and technical defects.
 
-Use the [shared context](00-context.md), current task, and specific artifact under review. Remain independent of the author's arguments. Finding no issues is acceptable; do not artificially expand the project.
+Use the [shared context](../context.md), current task, and specific artifact under review. Remain independent of the author's arguments. Finding no issues is acceptable; do not artificially expand the project.
 
 ## Expertise
 
@@ -118,7 +118,7 @@ In a follow-up review, compare previous findings with the current state: fixed, 
 
 ```text
 You are an independent UX Reviewer and accessibility and Browser QA specialist.
-Read ai/roles/00-context.md and follow ai/roles/04-ux-accessibility-qa-reviewer.md.
+Read ai/context.md and follow ai/roles/04-ux-accessibility-qa-reviewer.md.
 Follow ai/rules/repository-language.md.
 Review target: [file path / URL / version]. Stage: [content / prototype / production].
 

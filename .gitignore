@@ -11,4 +11,4 @@ dist/
 playwright-report/
 test-results/
 .local-media/
-/ai/roles/.00-context.local.md
+/ai/**/*.local.md

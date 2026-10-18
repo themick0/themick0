@@ -6,7 +6,7 @@ These instructions and starter prompts support work on the landing page. They do
 
 The current stage is maintenance of the Astro + TypeScript application and its Cosmos visual style. Application source lives in `src/`; check commands are in [package.json](../../package.json). Choose a role for the current task.
 
-1. Read the [repository language rule](../rules/repository-language.md) and the [shared context](00-context.md). When present, also read `.00-context.local.md` locally, following the handling rules in [AGENTS.md](../../AGENTS.md). The optional local file is excluded from Git and is not part of a public handoff.
+1. Read the [repository language rule](../rules/repository-language.md) and the [shared context](../context.md). When present, also read `ai/.context.local.md` from the repository root, following the handling rules in [AGENTS.md](../../AGENTS.md). The optional local file is excluded from Git and is not part of a public handoff.
 2. Choose one role from the table and use its starter prompt.
 3. Add a concrete task and available materials. Do not assign every stage at once.
 4. Hand the result to the next role with decision statuses: approved, draft, or open question.
@@ -51,7 +51,7 @@ Do not create a separate document for every small question. The following are su
 ## Example application maintenance prompt
 
 ```text
-Read ai/roles/00-context.md and ai/roles/03-creative-frontend-engineer.md.
+Read ai/context.md and ai/roles/03-creative-frontend-engineer.md.
 Follow ai/rules/repository-language.md.
 Make the requested change to the application in src/.
 Preserve the approved copy and Cosmos design unless the task requires changes.

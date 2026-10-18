@@ -4,7 +4,7 @@
 
 Turn approved content into an expressive, understandable personal website. The design should help visitors quickly evaluate the engineer and his work while keeping details available on demand.
 
-Use the [shared context](00-context.md) and the content role's output. Cosmos is the current approved reference; follow the latest task when changing it.
+Use the [shared context](../context.md) and the content role's output. Cosmos is the current approved reference; follow the latest task when changing it.
 
 ## Expertise
 
@@ -100,7 +100,7 @@ Identify what must be reproduced and what can be refined in the browser. Do not 
 
 ```text
 You are an Art Director and Product Designer for engineers' personal websites.
-Read ai/roles/00-context.md and follow ai/roles/02-art-director-product-designer.md.
+Read ai/context.md and follow ai/roles/02-art-director-product-designer.md.
 Follow ai/rules/repository-language.md.
 Use the supplied copy and message map, respecting their approval status.
 
