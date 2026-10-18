@@ -235,6 +235,26 @@ for (const [route, $] of pages) {
 }
 
 const robots = await readFile(path.join(output, 'robots.txt'), 'utf8');
+const cv = JSON.parse(await readFile('.generated/cv/content.json', 'utf8'));
+const cvPage = pages.get(base + 'cv/');
+assert(cvPage, 'CV must have a static HTML page.');
+assert(
+  cvPage('main').text().includes(cv.name),
+  'CV name must be present in HTML.',
+);
+for (const section of cv.sections) {
+  assert(
+    cvPage('h2')
+      .toArray()
+      .some((node) => cvPage(node).text() === section.title),
+    'CV section must be present in HTML.',
+  );
+}
+assert.deepEqual(
+  await readFile(path.join(output, 'cv.pdf')),
+  await readFile('.generated/cv/cv.pdf'),
+  'Published PDF must match the exported CV.',
+);
 assert(
   robots.includes('User-agent: *\nAllow: /'),
   'Crawlers must be able to read page-level indexing directives.',

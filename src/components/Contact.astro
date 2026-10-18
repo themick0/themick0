@@ -1,6 +1,7 @@
 ---
 import { profile } from '../data/profile';
 import { socialIcons } from '../data/social-icons';
+import { pathTo } from '../lib/paths';
 ---
 
 <section class="contact" id="contact" aria-labelledby="contact-title">
@@ -66,14 +67,7 @@ import { socialIcons } from '../data/social-icons';
           </a>
         ))
       }
-      <a
-        class="link"
-        href={profile.cv}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="View CV (opens in a new tab)"
-        title="View CV (opens in a new tab)"
-      >
+      <a class="link" href={pathTo(profile.cv)}>
         <svg
           class="social-icon"
           xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +87,7 @@ import { socialIcons } from '../data/social-icons';
           <path d="M14 2v6h6M8 13h8M8 17h6"></path>
         </svg>
         <span>View CV</span>
-        <span class="arrow" aria-hidden="true">↗</span>
+        <span class="arrow" aria-hidden="true">→</span>
       </a>
     </nav>
   </div>

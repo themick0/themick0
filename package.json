@@ -8,9 +8,11 @@
     "pnpm": ">=10.33.0"
   },
   "scripts": {
-    "dev": "astro dev --host 0.0.0.0",
+    "dev": "node scripts/sync-cv.mjs && astro dev --host 0.0.0.0",
     "check": "astro check",
-    "build": "astro check && astro build && node scripts/validate-build.mjs",
+    "build": "node scripts/sync-cv.mjs && astro check && astro build && node scripts/validate-build.mjs",
+    "sync:cv": "node scripts/sync-cv.mjs",
+    "test:cv": "node --test scripts/sync-cv.test.mjs",
     "preview": "astro preview --host 0.0.0.0",
     "validate": "node scripts/validate-build.mjs",
     "test": "playwright test",

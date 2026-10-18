@@ -1,7 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const routes = ['./', 'projects/forge/', 'projects/neuraverse/', '404.html'];
+const routes = [
+  './',
+  'projects/forge/',
+  'projects/neuraverse/',
+  'cv/',
+  '404.html',
+];
 
 test('unknown URLs return an actual 404 with noindex', async ({ page }) => {
   const response = await page.goto('this-page-does-not-exist/');
