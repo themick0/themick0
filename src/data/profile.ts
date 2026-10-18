@@ -11,7 +11,8 @@ export const profile = {
   roleLines,
   email: 'pamiheevcorp@gmail.com',
   cv: 'https://docs.google.com/document/d/1IYf3gFEx1d9iv_SeCIcJF_PlgPekLYwY/edit',
-  description: `${name} — ${role}. DeFi Solutions, Full-Stack Engineering and AI Automation. From architecture to production.`,
+  description:
+    'Full-stack engineering, DeFi solutions and AI integrations. From architecture to production.',
   expertise: ['Full-Stack Engineering', 'DeFi Solutions', 'AI Automation'],
   socials: [
     { label: 'GitHub', href: github },

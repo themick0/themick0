@@ -37,7 +37,7 @@ const structuredData =
             '@type': 'WebSite',
             '@id': `${home}#website`,
             url: home,
-            name: `${profile.name} — ${profile.role}`,
+            name: profile.handle,
             inLanguage: 'en',
             publisher: { '@id': `${home}#person` },
           },
@@ -96,7 +96,7 @@ const structuredData =
 <meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:site_name" content={profile.name} />
+<meta property="og:site_name" content={profile.handle} />
 <meta property="og:locale" content="en_US" />
 {canonical && <meta property="og:url" content={canonical} />}
 <meta name="twitter:card" content="summary_large_image" />
