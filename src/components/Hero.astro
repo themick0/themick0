@@ -1,0 +1,333 @@
+---
+import CosmosScene from './CosmosScene.astro';
+import { profile } from '../data/profile';
+---
+
+<div class="intro" data-cosmos>
+  <CosmosScene />
+  <section
+    class="hero wrap"
+    id="hero"
+    tabindex="-1"
+    aria-labelledby="hero-title"
+  >
+    <h1 class="hero-title" id="hero-title">
+      <span class="hero-line">{profile.roleLines[0]} </span>
+      <span class="hero-line iridescent">{profile.roleLines[1]}.</span>
+    </h1>
+    <p class="hero-description">From architecture to production.</p>
+    <ul class="hero-expertise" aria-label="Areas of experience" role="list">
+      {profile.expertise.map((area) => <li>{area}</li>)}
+    </ul>
+  </section>
+  <div class="hero-actions wrap">
+    <a class="button" href="#work" data-view-projects
+      >View projects <span class="arrow" aria-hidden="true">↓</span></a
+    >
+    <p class="hero-proof">
+      <strong>8+ years</strong> in software engineering
+    </p>
+  </div>
+</div>
+<script>
+  import { initCosmos } from '../scripts/cosmos';
+
+  const projects = document.getElementById('work');
+  document
+    .querySelector<HTMLAnchorElement>('[data-view-projects]')
+    ?.addEventListener('click', (event) => {
+      if (
+        !projects ||
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+
+      event.preventDefault();
+      if (location.hash) {
+        history.replaceState(
+          history.state,
+          '',
+          location.pathname + location.search,
+        );
+      }
+      document.getElementById('work-title')?.focus({ preventScroll: true });
+      projects.scrollIntoView({
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'instant'
+          : 'smooth',
+        block: 'start',
+      });
+    });
+
+  initCosmos();
+</script>
+<style>
+  .intro {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-row: 1 / span 3;
+    grid-template-rows: subgrid;
+    background: var(--bg);
+  }
+  .hero {
+    grid-row: 2;
+    align-self: center;
+    padding-block: 56px 42px;
+  }
+  .hero-title {
+    max-width: 1160px;
+    font-size: clamp(4rem, 8.2vw, 7.875rem);
+    font-weight: 400;
+    line-height: 0.99;
+    letter-spacing: -0.075em;
+    text-shadow: 0 3px 35px #05070d38;
+  }
+  .hero-line {
+    display: block;
+  }
+  .hero-line:first-child {
+    color: #f0f2f9;
+  }
+  /* Extra space preserves descenders and the final glyph in clipped gradient text. */
+  .hero-line.iridescent {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0 0.14em 0.2em 0;
+    margin-bottom: -0.2em;
+    background-image:
+      radial-gradient(
+        ellipse 1em 1.2em at var(--title-x, 50%) var(--title-y, 50%),
+        #ffffff73,
+        transparent 75%
+      ),
+      var(--spectrum);
+    background-position:
+      0 0,
+      var(--sheen, 35%) 50%;
+    background-size:
+      100% 100%,
+      180% 100%;
+  }
+  .hero-description {
+    margin-top: 32px;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    color: #cbd3e0;
+  }
+  .hero-expertise {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 0;
+    margin: 26px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+    color: #abb9ce;
+  }
+  .hero-expertise li {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    cursor: default;
+    transition: color 160ms ease-out;
+  }
+  .hero-expertise li:not(:last-child)::after {
+    content: '·';
+    color: #7399bd;
+    padding-inline: 17px;
+  }
+  .hero-actions {
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    padding-block: 24px
+      clamp(66px, calc(var(--intro-height, 100svh) * 0.095), 104px);
+  }
+  .hero-proof {
+    color: var(--muted);
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+  }
+  .hero-proof strong {
+    color: var(--text);
+    font-weight: 400;
+  }
+  .button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    min-width: 44px;
+    min-height: 58px;
+    max-width: 100%;
+    padding: 16px 24px 16px 28px;
+    border: 1px solid #acc6eb5c;
+    border-radius: 999px;
+    color: #f0f4ff;
+    background: #a2c5ff0a;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    box-shadow: inset 0 0 24px #a7c6ff06;
+    backdrop-filter: blur(12px);
+    transition:
+      background 300ms ease,
+      box-shadow 300ms ease,
+      transform 300ms ease;
+  }
+  .button .arrow {
+    color: #c7e9ff;
+  }
+  .button:focus-visible {
+    background: #a2c5ff26;
+  }
+  @media (hover: hover) {
+    .hero-expertise li:hover {
+      color: #fff;
+    }
+    .button:hover {
+      background: #a2c5ff1a;
+      box-shadow: 0 0 36px #95c7ff16;
+      border-color: #d4eaff;
+      transform: translateY(-2px);
+    }
+    .button:hover .arrow {
+      transform: translateY(3px);
+    }
+  }
+  @keyframes cosmic-arrival {
+    from {
+      transform: translateY(24px);
+      filter: blur(5px);
+    }
+    to {
+      transform: none;
+      filter: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .is-entering .hero-line:first-child {
+      animation: cosmic-arrival 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .is-entering .hero-line.iridescent {
+      animation: cosmic-arrival 1.8s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .is-entering .hero-description,
+    .is-entering .hero-expertise {
+      animation: cosmic-arrival 1.6s 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+  }
+  @media (max-width: 1023px) {
+    .hero-title {
+      font-size: clamp(4rem, 9vw, 6.25rem);
+    }
+  }
+  @media (max-width: 767px) {
+    .hero {
+      padding-block: 40px 32px;
+    }
+    .hero-title {
+      font-size: clamp(2.4375rem, 10.6vw, 4.75rem);
+      line-height: 1.08;
+      letter-spacing: -0.07em;
+    }
+    .hero-description {
+      margin-top: 26px;
+      font-size: 1.1875rem;
+    }
+    .hero-expertise {
+      max-width: 330px;
+      font-size: 0.875rem;
+      line-height: 1.9;
+      margin-top: 20px;
+    }
+    .hero-expertise li:not(:last-child)::after {
+      padding-inline: 9px;
+    }
+    .hero-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      padding-block: 16px 58px;
+      gap: 24px;
+    }
+    .hero-proof {
+      order: -1;
+    }
+    .button {
+      min-height: 54px;
+      padding: 14px 23px;
+      font-size: 0.875rem;
+    }
+  }
+  @media (max-width: 359px) {
+    .hero-title {
+      font-size: 2.3125rem;
+    }
+    .hero-description {
+      font-size: 1.125rem;
+    }
+  }
+  @media (max-height: 650px) and (min-width: 768px) and (pointer: fine) {
+    .hero {
+      padding-block: 16px;
+    }
+    .hero-title {
+      font-size: clamp(2.625rem, 7vw, 4.75rem);
+    }
+    .hero-description {
+      margin-top: 16px;
+      font-size: 1.25rem;
+    }
+    .hero-expertise {
+      margin-top: 16px;
+    }
+    .hero-actions {
+      padding-block: 16px 36px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-line.iridescent {
+      background-image: var(--spectrum);
+    }
+    .button:hover {
+      transform: none;
+    }
+  }
+  @media (forced-colors: active) {
+    .hero-line:first-child,
+    .hero-description,
+    .hero-expertise {
+      color: CanvasText;
+    }
+    .button {
+      background: ButtonFace;
+      color: ButtonText;
+      border-color: ButtonText;
+    }
+  }
+  @media print {
+    .hero-actions {
+      display: none;
+    }
+    .intro {
+      background: none;
+    }
+    .hero-title {
+      font-size: 3.5rem;
+    }
+    .hero-line:first-child,
+    .hero-description,
+    .hero-expertise {
+      color: #111;
+    }
+  }
+</style>

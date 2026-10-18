@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Projects from '../components/Projects.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import { profile } from '../data/profile';
+---
+
+<BaseLayout
+  title={`${profile.name} — ${profile.role}`}
+  description={profile.description}
+  skipTo="#hero"
+>
+  <div class="home">
+    <Header home />
+    <main id="main" tabindex="-1">
+      <Hero />
+      <div class="wrap home-content">
+        <Projects />
+        <About />
+        <Contact />
+      </div>
+    </main>
+  </div>
+</BaseLayout>
+
+<script>
+  const home = document.querySelector<HTMLElement>('.home');
+  const touch = matchMedia('(pointer: coarse)');
+  let viewportWidth = 0;
+
+  function stabilizeIntroHeight() {
+    if (!home) return;
+    if (!touch.matches) {
+      home.style.removeProperty('--intro-height');
+      viewportWidth = 0;
+      return;
+    }
+    const width = document.documentElement.clientWidth;
+    // Toolbar changes affect height only; rotation and window resizing also change width.
+    if (width === viewportWidth) return;
+    home.style.removeProperty('--intro-height');
+    const height = getComputedStyle(home, '::before').minHeight;
+    // WebKit may execute this module before the page's stylesheet is ready.
+    if (!(parseFloat(height) > 0)) return;
+    viewportWidth = width;
+    home.style.setProperty('--intro-height', height);
+  }
+
+  stabilizeIntroHeight();
+  window.addEventListener('load', stabilizeIntroHeight, { once: true });
+  window.addEventListener('resize', stabilizeIntroHeight, { passive: true });
+  touch.addEventListener('change', stabilizeIntroHeight);
+</script>
+
+<style>
+  /* Share header, hero, actions, and content rows while keeping the banner outside main. */
+  .home {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+  }
+  /* Desktop leaves the beginning of the project section visible below the opening. */
+  .home::before {
+    content: '';
+    grid-area: 1 / 1 / 4;
+    min-height: var(--intro-height, calc(100svh - 112px));
+    pointer-events: none;
+  }
+  .home > :global(.site-header) {
+    grid-area: 1 / 1;
+    z-index: 1;
+  }
+  main {
+    display: grid;
+    grid-area: 1 / 1 / 5;
+    grid-template-rows: subgrid;
+    min-width: 0;
+  }
+  .home-content {
+    isolation: isolate;
+  }
+  @media (max-width: 767px) {
+    .home::before {
+      min-height: var(--intro-height, 100svh);
+    }
+  }
+  @media print {
+    .home::before {
+      min-height: 0;
+    }
+  }
+</style>

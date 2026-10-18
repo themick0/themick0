@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="space"><stop stop-color="#253453"/><stop offset="1" stop-color="#05070d"/></radialGradient>
+    <radialGradient id="planet" cx=".25" cy=".2"><stop stop-color="#18243d"/><stop offset="1" stop-color="#03050b"/></radialGradient>
+    <linearGradient id="text"><stop stop-color="#ffffff"/><stop offset=".45" stop-color="#c8e9ff"/><stop offset="1" stop-color="#c4b7e5"/></linearGradient>
+    <linearGradient id="comet"><stop stop-color="#d7f4ff"/><stop offset="1" stop-color="#80b7f9" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#05070d"/>
+  <ellipse cx="1040" cy="220" rx="580" ry="520" fill="url(#space)"/>
+  <g fill="#c3e7ff" opacity=".5"><circle cx="68" cy="171" r="1"/><circle cx="413" cy="83" r="1"/><circle cx="663" cy="131" r="1.4"/><circle cx="768" cy="42" r="1"/><circle cx="1150" cy="443" r="1.4"/><circle cx="1060" cy="520" r="1"/><circle cx="915" cy="574" r="1"/><circle cx="544" cy="559" r="1"/><circle cx="676" cy="427" r="1"/><circle cx="34" cy="432" r="1.2"/></g>
+  <g transform="translate(1000 282) rotate(-28)"><ellipse rx="306" ry="130" fill="none" stroke="#90bdf0" stroke-opacity=".25"/><ellipse rx="353" ry="160" fill="none" stroke="#90bdf0" stroke-opacity=".12"/><circle r="185" fill="url(#planet)"/><path d="M-185 0A185 185 0 0 1 0-185" fill="none" stroke="#a9cfff" stroke-width="1.5"/><circle cx="-237" cy="-82" r="3" fill="#d0edff"/></g>
+  <path d="M904 120l270-156" stroke="url(#comet)" stroke-width="2"/><circle cx="904" cy="120" r="3" fill="#fff"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="68" y="83" font-size="23" fill="#f1f3fa">Peter Mikheev</text>
+    <text x="68" y="110" font-size="14" letter-spacing="1" fill="#a5afc2">themick0</text>
+    <text x="62" y="277" font-size="91" letter-spacing="-6" fill="#f1f3fa">Senior Software</text>
+    <text x="62" y="374" font-size="105" letter-spacing="-7" fill="url(#text)">Engineer.</text>
+    <text x="68" y="438" font-size="25" fill="#cbd3e0">From architecture to production.</text>
+    <text x="68" y="550" font-size="17" fill="#abb9ce">DeFi Solutions · Full-Stack Engineering · AI Automation</text>
+  </g>
+</svg>

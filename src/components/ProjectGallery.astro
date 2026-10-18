@@ -1,0 +1,358 @@
+---
+import type { ProjectScreenshot, ProjectVideo } from '../data/projects';
+import { getImage } from 'astro:assets';
+import { pathTo } from '../lib/paths';
+import 'photoswipe/style.css';
+
+interface Props {
+  id: string;
+  name: string;
+  images: ProjectScreenshot[];
+  video?: ProjectVideo;
+}
+const { id, name, images, video } = Astro.props;
+const slideCount = images.length + (video ? 1 : 0);
+const mediaLabel = video ? 'media' : 'screenshots';
+const navigationLabel = video ? 'slide' : 'screenshot';
+const poster = video
+  ? await getImage({
+      src: video.poster,
+      width: 1600,
+      height: 900,
+      fit: 'cover',
+      position: 'top',
+      format: 'webp',
+      quality: 90,
+    })
+  : undefined;
+const screenshots = await Promise.all(
+  images.map(async (image) => ({
+    ...image,
+    optimized: await getImage({
+      src: image.src,
+      width: 1600,
+      height: 900,
+      fit: 'cover',
+      position: 'top',
+      format: 'webp',
+      quality: 90,
+    }),
+  })),
+);
+---
+
+<section
+  class="gallery"
+  id={id}
+  data-project-gallery
+  data-name={name}
+  aria-label={`${name} ${mediaLabel}`}
+  aria-roledescription="carousel"
+>
+  <div
+    class="gallery-viewport"
+    id={`${id}-slides`}
+    data-gallery-viewport
+    tabindex="0"
+    role="group"
+    aria-label={`${video ? 'Gameplay video and screenshots' : 'Screenshots'}. Use left and right arrow keys to browse.`}
+  >
+    {
+      video && poster && (
+        <figure
+          class="gallery-slide"
+          data-gallery-slide
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`1 of ${slideCount}: Gameplay video`}
+        >
+          <div class="gallery-frame gallery-video-frame">
+            <video
+              class="gallery-video"
+              data-gallery-video
+              src={pathTo(video.src)}
+              poster={poster.src}
+              width="1920"
+              height="1080"
+              controls
+              muted
+              playsinline
+              preload="none"
+              aria-label={`${name} gameplay video`}
+              aria-describedby={`${id}-video-description`}
+            >
+              <a href={pathTo(video.src)}>Watch the gameplay video</a>
+            </video>
+            <button
+              class="gallery-enlarge gallery-video-enlarge"
+              type="button"
+              data-gallery-enlarge
+              aria-label="Enlarge gameplay video"
+              aria-haspopup="dialog"
+              hidden
+            />
+          </div>
+          <figcaption id={`${id}-video-description`} class="sr-only">
+            {video.description}
+          </figcaption>
+        </figure>
+      )
+    }
+    {
+      screenshots.map((image, index) => (
+        <figure
+          class="gallery-slide"
+          data-gallery-slide
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${index + (video ? 2 : 1)} of ${slideCount}: ${image.caption}`}
+        >
+          <div class="gallery-frame">
+            <img
+              class="gallery-image"
+              data-gallery-image
+              src={image.optimized.src}
+              width="1600"
+              height="900"
+              alt={image.alt}
+              decoding="async"
+              loading={!video && index === 0 ? 'eager' : 'lazy'}
+              draggable="false"
+            />
+            <button
+              class="gallery-enlarge"
+              type="button"
+              data-gallery-enlarge
+              aria-label={`Enlarge screenshot: ${image.caption}`}
+              aria-haspopup="dialog"
+              hidden
+            />
+          </div>
+        </figure>
+      ))
+    }
+  </div>
+  <div class="gallery-controls" data-gallery-controls hidden>
+    <div class="gallery-arrows">
+      <button
+        type="button"
+        class="gallery-arrow"
+        data-gallery-prev
+        aria-label={`Previous ${navigationLabel}`}
+        aria-controls={`${id}-slides`}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m14 6-6 6 6 6"></path>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="gallery-arrow"
+        data-gallery-next
+        aria-label={`Next ${navigationLabel}`}
+        aria-controls={`${id}-slides`}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m10 6 6 6-6 6"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initProjectGallery } from '../scripts/project-gallery';
+  document
+    .querySelectorAll<HTMLElement>('[data-project-gallery]')
+    .forEach(initProjectGallery);
+</script>
+
+<style>
+  @property --gallery-scrollbar-thumb {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #687d99;
+  }
+  .gallery {
+    min-width: 0;
+    width: 100%;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  .gallery-viewport {
+    --gallery-scrollbar-thumb: #687d99;
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gallery-scrollbar-thumb) transparent;
+    transition: --gallery-scrollbar-thumb 220ms ease-out;
+    border: 1px solid #43546e;
+    border-radius: 12px;
+  }
+  .gallery-viewport::-webkit-scrollbar {
+    height: 6px;
+    background: transparent;
+  }
+  .gallery-viewport::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 999px;
+  }
+  .gallery-viewport::-webkit-scrollbar-thumb {
+    background: var(--gallery-scrollbar-thumb);
+    border-radius: 999px;
+  }
+  @media (hover: hover) {
+    .gallery-viewport:hover {
+      --gallery-scrollbar-thumb: #91a8c5;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-viewport {
+      transition: none;
+    }
+  }
+  @media (forced-colors: active) {
+    .gallery-viewport {
+      scrollbar-color: auto;
+    }
+  }
+  .gallery-slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    margin: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .gallery-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #e8ebf2;
+  }
+  .gallery-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .gallery-video-frame {
+    background: var(--bg);
+  }
+  .gallery-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .gallery-enlarge {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px;
+    border: 0;
+    color: var(--text);
+    background: transparent;
+    cursor: zoom-in;
+  }
+  .gallery-enlarge:focus-visible {
+    outline-offset: -5px;
+  }
+  .gallery-video-enlarge {
+    bottom: 64px;
+  }
+  svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .gallery-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+  .gallery-arrows {
+    display: flex;
+    flex-shrink: 0;
+    gap: 6px;
+  }
+  .gallery-arrow {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: #abcaff05;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  @media (hover: hover) {
+    .gallery-arrow:hover {
+      border-color: var(--accent);
+      background: #1a2b42;
+    }
+  }
+  @media print {
+    .gallery-viewport {
+      display: block;
+      overflow: visible;
+      border: 0;
+    }
+    .gallery-slide {
+      margin-bottom: 16px;
+      break-inside: avoid;
+    }
+    .gallery-enlarge,
+    .gallery-controls {
+      display: none;
+    }
+  }
+
+  :global(.project-lightbox) {
+    --pswp-bg: #05070d;
+    cursor: zoom-out;
+  }
+  :global(.project-lightbox .pswp__img) {
+    border-radius: 5px;
+    cursor: zoom-out;
+  }
+  :global(.project-lightbox .pswp__video) {
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+    background: var(--bg);
+  }
+  :global(.project-lightbox .pswp__video video) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  :global(.project-lightbox .pswp__video-close) {
+    position: absolute;
+    inset: 0 0 64px;
+    width: 100%;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: zoom-out;
+  }
+  :global(.project-lightbox .pswp__video-close:focus-visible) {
+    outline-offset: -5px;
+  }
+</style>

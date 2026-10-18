@@ -1,0 +1,85 @@
+name: Build and deploy portfolio
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: portfolio-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check code duplication
+        id: duplication
+        uses: kucherenko/jscpd@v5
+        with:
+          threshold: 5
+          ignore: '**/pnpm-lock.yaml,**/.git/**'
+          upload-sarif: false
+      # The action exposes the scanner's exit code without failing the step.
+      - name: Enforce duplication threshold
+        if: steps.duplication.outputs.exit-code != '0'
+        run: |
+          echo "::error::Code duplication check failed. See the jscpd report above."
+          exit 1
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm test
+      - name: Check production metadata and subdirectory hosting
+        run: pnpm build
+        env:
+          SITE_URL: https://seo-fixture.themick0.dev/portfolio/
+          SITE_INDEXABLE: 'true'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+      SITE_INDEXABLE: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Deploy static files over SSH
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/var/www/themick0' }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          RELEASE_ID: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: bash scripts/deploy.sh
+      - name: Check the public site
+        run: |
+          curl --fail --silent --show-error --retry 3 --max-time 20 "$SITE_URL" -o /dev/null
+          curl --fail --silent --show-error --retry 3 --max-time 20 "${SITE_URL%/}/sitemap-index.xml" -o /dev/null

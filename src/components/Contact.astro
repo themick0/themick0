@@ -1,0 +1,246 @@
+---
+import { profile } from '../data/profile';
+import { socialIcons } from '../data/social-icons';
+---
+
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <div class="contact-intro">
+    <h2 class="iridescent" id="contact-title">Let’s talk.</h2>
+    <p class="contact-description">
+      Open to product engineering roles and project collaborations.
+    </p>
+  </div>
+  <div class="contact-channels">
+    <!--email_off-->
+    <a class="email-link" href={`mailto:${profile.email}`}>
+      <span class="email-address">
+        <svg
+          class="email-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+          <path d="m3 7 9 6 9-6"></path>
+        </svg>
+        <span>{profile.email}</span>
+      </span>
+      <span class="arrow" aria-hidden="true">↗</span>
+    </a>
+    <!--/email_off-->
+    <nav class="socials" aria-label="Profiles and CV">
+      {
+        profile.socials.map(({ label, href }) => (
+          <a
+            class="link"
+            href={href}
+            target="_blank"
+            rel="me noopener noreferrer"
+            aria-label={`${label} (opens in a new tab)`}
+            title={`${label} (opens in a new tab)`}
+          >
+            <svg
+              class="social-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="currentColor"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d={socialIcons[label]} />
+            </svg>
+            <span>{label}</span>
+            <span class="arrow" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        ))
+      }
+      <a
+        class="link"
+        href={profile.cv}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View CV (opens in a new tab)"
+        title="View CV (opens in a new tab)"
+      >
+        <svg
+          class="social-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"
+          ></path>
+          <path d="M14 2v6h6M8 13h8M8 17h6"></path>
+        </svg>
+        <span>View CV</span>
+        <span class="arrow" aria-hidden="true">↗</span>
+      </a>
+    </nav>
+  </div>
+</section>
+<style>
+  .contact {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 72px;
+    padding-block: 92px 84px;
+  }
+  .contact::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0 calc(-1 * min(4%, var(--gutter)));
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at 65% 100%,
+      #2030533b,
+      transparent 65%
+    );
+  }
+  .contact-intro,
+  .contact-channels {
+    min-width: 0;
+  }
+  .contact-description {
+    max-width: 45ch;
+    margin-top: 24px;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  h2 {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.04em 0.12em 0.12em 0;
+    margin-bottom: -0.12em;
+    font-size: clamp(4.5rem, 9vw, 7.875rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.06em;
+  }
+  .email-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 64px;
+    max-width: 100%;
+    padding-block: 16px 24px;
+    border-bottom: 1px solid var(--line);
+    font-size: clamp(1.125rem, 1.6vw, 1.4375rem);
+    text-decoration: none;
+    transition: border-color 200ms ease;
+  }
+  .email-address {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .email-address > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .email-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+  .email-link .arrow {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--accent);
+    font-size: 1.5rem;
+  }
+  .socials {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 20px;
+  }
+  .socials .link {
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+  .social-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+  }
+  .email-link:focus-visible .arrow {
+    border-color: var(--accent);
+    background: var(--spectrum);
+    color: var(--bg);
+  }
+  @media (hover: hover) {
+    .email-link:hover {
+      border-color: var(--accent);
+    }
+    .email-link:hover .arrow {
+      transform: translate(3px, -3px);
+      border-color: var(--accent);
+      background: var(--spectrum);
+      color: var(--bg);
+    }
+    .socials .link:hover {
+      color: var(--accent);
+    }
+  }
+  @media (max-width: 1023px) {
+    .contact {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+  }
+  @media (max-width: 767px) {
+    .contact {
+      padding-block: 64px;
+      gap: 28px;
+    }
+    h2 {
+      font-size: clamp(4.25rem, 19vw, 7rem);
+    }
+    .email-link {
+      gap: 16px;
+      font-size: 1.125rem;
+    }
+    .socials {
+      gap: 8px 16px;
+    }
+  }
+  @media (forced-colors: active), print {
+    .contact::before {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+import StarCluster from './StarCluster.astro';
+import DestroyerArrival from './DestroyerArrival.astro';
+---
+
+<section class="about" id="about" aria-labelledby="about-title">
+  <StarCluster side="right" />
+  <h2 class="section-heading" id="about-title">About</h2>
+  <div class="about-copy">
+    <p class="about-lead">
+      Building software. <span class="about-lead-line">
+        Automating business processes with AI.
+      </span>
+    </p>
+    <div class="about-body">
+      <p class="about-detail">
+        I work directly with product teams and partners, taking products from
+        business requirements to production. I build full-stack applications
+        with React, TypeScript and Node.js, including DeFi products, wallets and
+        identity systems. I also help teams integrate AI services into existing
+        tools and automate repetitive tasks.
+      </p>
+    </div>
+    <DestroyerArrival />
+  </div>
+</section>
+<style>
+  .about {
+    position: relative;
+    padding-block: 92px 120px;
+    border-bottom: 1px solid #7c9cb72e;
+  }
+  .section-heading {
+    margin-bottom: 28px;
+  }
+  .about-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    column-gap: clamp(28px, 4vw, 56px);
+  }
+  .about-lead {
+    grid-column: 1 / -1;
+    max-width: 1000px;
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    line-height: 1.3;
+    letter-spacing: -0.035em;
+  }
+  .about-lead-line {
+    display: block;
+  }
+  .about-body {
+    grid-column: 1;
+    max-width: 67ch;
+    margin-top: 26px;
+  }
+  .about-detail {
+    color: var(--muted);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  @media (max-width: 767px) {
+    .about {
+      padding-block: 64px 88px;
+    }
+    .about-copy {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .section-heading,
+    .about-lead,
+    .about-body {
+      position: relative;
+      z-index: 1;
+    }
+    .about-lead {
+      font-size: clamp(1.6875rem, 6.9vw, 2.375rem);
+    }
+    .about-lead-line {
+      display: inline;
+    }
+    .about-detail {
+      font-size: 1rem;
+    }
+  }
+</style>

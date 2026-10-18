@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import { pathTo } from '../lib/paths';
+---
+
+<BaseLayout
+  title="Page not found — Peter Mikheev"
+  description="This page could not be found. Return to Peter Mikheev’s portfolio to explore projects and contact details."
+  noindex
+  casePage
+>
+  <Header />
+  <main class="wrap" id="main" tabindex="-1">
+    <p class="section-heading">404</p>
+    <h1>Lost in space.</h1>
+    <p>This page doesn’t exist. Let’s get you back.</p>
+    <a class="link" href={pathTo()}
+      >Back to the homepage <span aria-hidden="true">↗</span></a
+    >
+  </main>
+</BaseLayout>
+<style>
+  main {
+    min-height: 65svh;
+    padding-block: clamp(4rem, 12vh, 8rem);
+  }
+  h1 {
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 400;
+  }
+  p:not(.section-heading) {
+    margin-block: 2rem 1rem;
+    color: var(--muted);
+  }
+</style>

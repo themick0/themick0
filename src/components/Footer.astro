@@ -1,0 +1,60 @@
+---
+import { profile } from '../data/profile';
+import { pathTo } from '../lib/paths';
+---
+
+<footer class="footer wrap">
+  <span class="footer-identity">
+    <a href={pathTo('#top')}>{profile.name}</a>
+    <span aria-hidden="true">/</span>
+    <a
+      href={profile.github}
+      target="_blank"
+      rel="me noopener noreferrer"
+      aria-label={`${profile.handle} on GitHub (opens in a new tab)`}
+      title="GitHub (opens in a new tab)">{profile.handle}</a
+    >
+  </span>
+  <span>© {new Date().getFullYear()}</span>
+</footer>
+<style>
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    padding-block: 28px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.8125rem;
+    letter-spacing: 0.025em;
+  }
+  .footer-identity {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 0.5em;
+  }
+  .footer-identity a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    text-decoration: none;
+    transition: color 160ms ease-out;
+  }
+  .footer-identity a:focus-visible {
+    color: var(--accent);
+  }
+  @media (hover: hover) {
+    .footer-identity a:hover {
+      color: var(--accent);
+    }
+  }
+  @media (max-width: 767px) {
+    .footer {
+      font-size: 0.75rem;
+      padding-block: 24px;
+    }
+  }
+</style>

@@ -1,0 +1,218 @@
+---
+import { profile } from '../data/profile';
+import { socialIcons } from '../data/social-icons';
+import { pathTo } from '../lib/paths';
+interface Props {
+  home?: boolean;
+}
+const { home = false } = Astro.props;
+---
+
+<header class:list={['site-header', 'wrap', { 'case-header': !home }]}>
+  <a
+    class="brand"
+    href={home ? '#top' : pathTo('#top')}
+    aria-label={`${profile.name} ${profile.handle} — Home`}
+  >
+    <svg
+      class="brand-star"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 32 32"
+      width="32"
+      height="32"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M16 3v26M3 16h26M6.8 6.8l18.4 18.4M6.8 25.2 25.2 6.8"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"></path>
+      <circle cx="16" cy="16" r="3" fill="currentColor"></circle>
+    </svg>
+    <span class="brand-name">
+      <span>{profile.name}{' '}</span>
+      <span class="handle">{profile.handle}</span>
+    </span>
+  </a>
+  <nav class="header-socials" aria-label="Social profiles">
+    {
+      profile.socials.map(({ label, href }) => (
+        <a
+          href={href}
+          target="_blank"
+          rel="me noopener noreferrer"
+          aria-label={`${label} (opens in a new tab)`}
+          title={`${label} (opens in a new tab)`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="currentColor"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d={socialIcons[label]} />
+          </svg>
+        </a>
+      ))
+    }
+  </nav>
+</header>
+<style>
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+    min-height: 108px;
+    padding-block: 18px;
+  }
+  .case-header {
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 44px;
+    padding-block: 4px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .brand-star {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    color: #d3e6fa;
+  }
+  .brand-name {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+  }
+  .brand-name > span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    transition: color 160ms ease-out;
+  }
+  .brand:focus-visible .brand-name > span {
+    color: var(--accent);
+  }
+  .handle {
+    color: var(--muted);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 100%;
+  }
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+    max-width: 100%;
+    text-decoration: none;
+    transition:
+      color 160ms ease-out,
+      border-color 160ms ease-out,
+      background-color 160ms ease-out;
+  }
+  .header-socials {
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .header-socials a {
+    padding: 10px;
+    border-radius: 50%;
+    color: var(--muted);
+  }
+  .header-socials svg {
+    flex-shrink: 0;
+  }
+  nav a:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+    border-radius: 999px;
+    background: #b9def21a;
+  }
+  @media (hover: hover) {
+    .brand:hover .brand-name > span {
+      color: var(--accent);
+    }
+    nav a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: #b9def21a;
+    }
+  }
+  @media (max-width: 1023px) {
+    .site-header {
+      min-height: 96px;
+    }
+  }
+  @media (max-width: 767px) {
+    .site-header {
+      min-height: 86px;
+      gap: 8px;
+      padding-block: 12px;
+    }
+    .brand {
+      gap: 10px;
+      font-size: 0.8125rem;
+    }
+    .brand-star {
+      width: 1.5625rem;
+      height: 1.5625rem;
+    }
+    .brand-name {
+      gap: 4px;
+    }
+    .brand-name > span {
+      align-items: flex-end;
+      line-height: 1.2;
+    }
+    .brand-name .handle {
+      align-items: flex-start;
+    }
+    .handle {
+      font-size: 0.625rem;
+    }
+    nav {
+      gap: 8px;
+    }
+    .header-socials {
+      gap: 4px;
+    }
+  }
+  @media (max-width: 359px) {
+    .header-socials {
+      gap: 0;
+    }
+  }
+  @media (max-height: 650px) and (min-width: 768px) and (pointer: fine) {
+    .site-header {
+      min-height: 72px;
+      padding-block: 12px;
+    }
+  }
+  @media print {
+    nav {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,11 @@
+Edited with the built-in image_gen tool on October 17, 2026.
+Transparent background: true.
+Source: the previous imperial-destroyer.png asset, generated with image_gen.
+
+Use case: style-transfer.
+Asset type: transparent decorative spacecraft illustration for the existing Cosmos portfolio website.
+Input image 1 is the edit target. Transform this detailed Imperial Star Destroyer into a substantially more abstract, restrained geometric illustration that feels native to a minimal dark interface.
+Preserve the exact recognizable triangular wedge silhouette, elevated three-quarter dorsal view, stepped superstructure, rear bridge with two small sensor domes, diagonal orientation with pointed bow at lower left and stern at upper right, overall proportions, framing, and landscape 3:2 aspect ratio. Keep the whole vessel visible.
+Simplify the surface into a handful of broad smooth dark planes and about 5 to 7 clean structural levels. Remove all tiny panels, seams, greebles, guns, antenna clutter, machinery, scratches, texture, rows of windows and tiny lights. Retain only the major silhouette features needed to recognize a Star Destroyer. Clean refined abstract 3D geometry, not a photoreal model, not a toy and not a detailed wireframe.
+Use large quiet near-black navy and slate-blue surfaces, extremely subtle soft gradients and restrained thin icy blue/lavender rim highlights defining the principal edges. Desaturated palette matching #05070d, #293974, #c3e7ff and #bcafff. The body should remain dark and visually light, readable as an atmospheric geometric silhouette at 400 CSS pixels wide, without bright white faces or neon outlines.
+Background must be genuinely transparent alpha, with clean cutout edges. No background plate, no stars, no text, no logo, no watermark, no particles, no comets, no speed lines, no motion trails, no surrounding fog or large halo. Preserve composition and direction; change the rendering style and level of abstraction.
