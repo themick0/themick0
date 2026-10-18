@@ -1,0 +1,173 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import { readCv } from '../data/cv';
+import { pathTo } from '../lib/paths';
+
+const cv = await readCv();
+---
+
+<BaseLayout
+  title={`CV — ${cv.name}`}
+  description="Peter Mikheev’s CV: professional experience, technical skills, education and languages. Read online or download the PDF."
+  casePage
+>
+  <Header />
+  <main class="cv wrap" id="main" tabindex="-1">
+    <nav class="cv-actions" aria-label="CV navigation">
+      <a class="link back-link" href={pathTo()}>
+        <span class="arrow" aria-hidden="true">←</span> Back to homepage
+      </a>
+      <a
+        class="link cv-download"
+        href={pathTo('cv.pdf')}
+        download="Peter-Mikheev-CV.pdf"
+      >
+        Download PDF <span aria-hidden="true">↓</span>
+      </a>
+    </nav>
+    <header class="cv-heading">
+      <p class="section-heading">Curriculum vitae</p>
+      <h1>{cv.name}<span class="accent">.</span></h1>
+      <!--email_off-->
+      {
+        cv.intro.map((line, index) => (
+          <p class:list={['cv-intro', { 'cv-role': index === 0 }]}>{line}</p>
+        ))
+      }
+      <!--/email_off-->
+    </header>
+    <!--email_off-->
+    {
+      cv.sections.map((section, index) => (
+        <section class="cv-section" aria-labelledby={`cv-section-${index}`}>
+          <h2 id={`cv-section-${index}`}>{section.title}</h2>
+          {section.blocks.map((block) =>
+            block.kind === 'list' ? (
+              <ul>
+                {block.items.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            ) : block.kind === 'heading' ? (
+              <h3>{block.text}</h3>
+            ) : (
+              <p>{block.text}</p>
+            ),
+          )}
+        </section>
+      ))
+    }
+    <!--/email_off-->
+    <a class="link" href={pathTo('#contact')}
+      >Contact <span class="arrow" aria-hidden="true">→</span></a
+    >
+  </main>
+</BaseLayout>
+
+<style>
+  .cv {
+    max-width: 56rem;
+    padding-block: 2rem 5rem;
+  }
+  .cv-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .cv-actions a {
+    text-decoration: none;
+  }
+  .cv-download {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.65rem 1.25rem;
+    color: var(--accent);
+  }
+  .cv-heading {
+    padding-bottom: 2.5rem;
+  }
+  .section-heading {
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-size: clamp(2.75rem, 6vw, 5rem);
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+  }
+  .cv-intro {
+    color: var(--muted);
+    margin-top: 0.65rem;
+  }
+  .cv-role {
+    color: var(--text);
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .cv-section {
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+  h2 {
+    font-size: 1.625rem;
+    margin-bottom: 1.5rem;
+  }
+  h3 {
+    font-size: 1.1875rem;
+    line-height: 1.5;
+    letter-spacing: -0.015em;
+    margin-top: 2.5rem;
+  }
+  h2 + h3 {
+    margin-top: 0;
+  }
+  .cv-section p,
+  li {
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .cv-section p + p {
+    margin-top: 1rem;
+  }
+  ul {
+    padding-left: 1.25rem;
+    margin-block: 1rem 0;
+  }
+  li {
+    padding-left: 0.25rem;
+    overflow-wrap: anywhere;
+  }
+  li + li {
+    margin-top: 0.75rem;
+  }
+  li::marker {
+    color: var(--accent);
+  }
+  @media (max-width: 767px) {
+    .cv {
+      padding-block: 1.25rem 3rem;
+    }
+    .cv-actions {
+      margin-bottom: 2rem;
+    }
+    .cv-section {
+      padding-block: 2rem;
+    }
+  }
+  @media print {
+    .cv-actions,
+    .cv > .link {
+      display: none;
+    }
+    h2,
+    h3 {
+      break-after: avoid;
+    }
+    li {
+      break-inside: avoid;
+    }
+  }
+</style>
