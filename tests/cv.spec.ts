@@ -24,7 +24,9 @@ test('CV is discoverable, readable and downloadable without JavaScript', async (
     ).toBeVisible();
     for (const block of section.blocks) {
       for (const text of block.kind === 'list' ? block.items : [block.text]) {
-        await expect(page.locator('main')).toContainText(text);
+        await expect(page.locator('main')).toContainText(
+          text.map((run) => run.text).join(''),
+        );
       }
     }
   }
@@ -42,4 +44,56 @@ test('CV is discoverable, readable and downloadable without JavaScript', async (
   await page.getByRole('link', { name: 'Contact', exact: true }).click();
   await expect(page).toHaveURL(/\/#contact$/);
   await expect(page.locator('#contact')).toBeInViewport();
+});
+
+test('CV source links work without JavaScript and preserve their labels', async ({
+  page,
+  context,
+}) => {
+  const cv = await readCv();
+  const sourceLinks = [
+    ...cv.intro.flat(),
+    ...cv.sections.flatMap(({ blocks }) =>
+      blocks.flatMap((block) =>
+        block.kind === 'list' ? block.items.flat() : block.text,
+      ),
+    ),
+  ].filter((run) => run.href);
+  await page.goto('cv/');
+  const links = page.locator('.cv-intro a, .cv-section a');
+  await expect(links).toHaveCount(sourceLinks.length);
+  for (const [index, { text, href }] of sourceLinks.entries()) {
+    await expect(links.nth(index)).toHaveText(text);
+    await expect(links.nth(index)).toHaveAttribute('href', href!);
+  }
+  for (const link of await page
+    .locator('.cv-intro a[target="_blank"], .cv-section a[target="_blank"]')
+    .all()) {
+    await expect(link).toHaveAttribute('rel', /noopener/);
+    await expect(link).toHaveAttribute('rel', /noreferrer/);
+  }
+  const external = page
+    .locator('.cv-intro a[target="_blank"], .cv-section a[target="_blank"]')
+    .first();
+  if (await external.count()) {
+    const href = (await external.getAttribute('href'))!;
+    await context.route(href, (route) =>
+      route.fulfill({
+        contentType: 'text/html',
+        body: '<title>CV link destination</title>',
+      }),
+    );
+    const popupPromise = page.waitForEvent('popup');
+    await external.click();
+    const popup = await popupPromise;
+    await expect(popup).toHaveURL(href);
+    await expect(page).toHaveURL(/\/cv\/$/);
+    await popup.close();
+  }
+  await expect(
+    page.locator('.cv-intro a[href^="mailto:"]'),
+  ).not.toHaveAttribute('target', '_blank');
+  await expect(
+    page.locator('.cv-intro a[href="https://themick0.com/"]'),
+  ).not.toHaveAttribute('target', '_blank');
 });

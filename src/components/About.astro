@@ -20,6 +20,12 @@ import DestroyerArrival from './DestroyerArrival.astro';
         identity systems. I also help teams integrate AI into their products and
         internal workflows.
       </p>
+      <p class="about-detail">
+        I use AI to accelerate software development and automate workflows. My
+        work includes setting up and adapting AI agent harnesses to project
+        needs with defined requirements for code quality, reliability and
+        security.
+      </p>
     </div>
     <DestroyerArrival />
   </div>
@@ -57,6 +63,9 @@ import DestroyerArrival from './DestroyerArrival.astro';
     color: var(--muted);
     font-size: 1.0625rem;
     line-height: 1.7;
+  }
+  .about-detail + .about-detail {
+    margin-top: 1em;
   }
   @media (max-width: 767px) {
     .about {

@@ -1,0 +1,57 @@
+---
+import type { CvText } from '../data/cv';
+import { profile } from '../data/profile';
+
+interface Props {
+  runs: CvText;
+}
+
+const { runs } = Astro.props;
+const internalOrigins = new Set(['https://themick0.com', Astro.site?.origin]);
+const socialUrls = new Set(
+  profile.socials.map(({ href }) => href.replace(/\/$/, '')),
+);
+---
+
+{
+  runs.map(({ text, href }) => {
+    if (!href) return text;
+    const url = new URL(href);
+    const external =
+      ['https:', 'http:'].includes(url.protocol) &&
+      !internalOrigins.has(url.origin);
+    const rel = [
+      external ? 'noopener noreferrer' : '',
+      socialUrls.has(href.replace(/\/$/, '')) ? 'me' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    return (
+      <a
+        href={href}
+        target={external ? '_blank' : undefined}
+        rel={rel || undefined}
+        aria-label={external ? `${text} (opens in a new tab)` : undefined}
+      >
+        {text}
+      </a>
+    );
+  })
+}
+
+<style>
+  a {
+    color: var(--accent);
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  a:focus-visible {
+    border-color: var(--accent);
+  }
+  @media (hover: hover) {
+    a:hover {
+      border-color: var(--accent);
+    }
+  }
+</style>

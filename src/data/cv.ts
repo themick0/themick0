@@ -1,12 +1,14 @@
 import { readFile } from 'node:fs/promises';
 
+export type CvText = { text: string; href?: string }[];
+
 type CvBlock =
-  | { kind: 'paragraph' | 'heading'; text: string }
-  | { kind: 'list'; items: string[] };
+  | { kind: 'paragraph' | 'heading'; text: CvText }
+  | { kind: 'list'; items: CvText[] };
 
 interface Cv {
   name: string;
-  intro: string[];
+  intro: CvText[];
   sections: { title: string; blocks: CvBlock[] }[];
 }
 

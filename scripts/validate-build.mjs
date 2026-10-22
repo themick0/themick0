@@ -250,6 +250,24 @@ for (const section of cv.sections) {
     'CV section must be present in HTML.',
   );
 }
+const cvRuns = [
+  ...cv.intro.flat(),
+  ...cv.sections.flatMap(({ blocks }) =>
+    blocks.flatMap((block) =>
+      block.kind === 'list' ? block.items.flat() : block.text,
+    ),
+  ),
+];
+assert.deepEqual(
+  cvPage('.cv-intro a, .cv-section a')
+    .toArray()
+    .map((node) => ({
+      text: cvPage(node).text(),
+      href: cvPage(node).attr('href'),
+    })),
+  cvRuns.filter(({ href }) => href),
+  'CV links must preserve their labels, destinations and document order.',
+);
 assert.deepEqual(
   await readFile(path.join(output, 'cv.pdf')),
   await readFile('.generated/cv/cv.pdf'),

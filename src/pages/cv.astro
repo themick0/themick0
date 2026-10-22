@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
+import CvText from '../components/CvText.astro';
 import { readCv } from '../data/cv';
 import { pathTo } from '../lib/paths';
 
@@ -19,11 +20,11 @@ const cv = await readCv();
         <span class="arrow" aria-hidden="true">←</span> Back to homepage
       </a>
       <a
-        class="link cv-download"
+        class="link cv-action cv-download"
         href={pathTo('cv.pdf')}
         download="Peter-Mikheev-CV.pdf"
       >
-        Download PDF <span aria-hidden="true">↓</span>
+        Download PDF <span class="arrow" aria-hidden="true">↓</span>
       </a>
     </nav>
     <header class="cv-heading">
@@ -32,7 +33,9 @@ const cv = await readCv();
       <!--email_off-->
       {
         cv.intro.map((line, index) => (
-          <p class:list={['cv-intro', { 'cv-role': index === 0 }]}>{line}</p>
+          <p class:list={['cv-intro', { 'cv-role': index === 0 }]}>
+            <CvText runs={line} />
+          </p>
         ))
       }
       <!--/email_off-->
@@ -46,20 +49,26 @@ const cv = await readCv();
             block.kind === 'list' ? (
               <ul>
                 {block.items.map((item) => (
-                  <li>{item}</li>
+                  <li>
+                    <CvText runs={item} />
+                  </li>
                 ))}
               </ul>
             ) : block.kind === 'heading' ? (
-              <h3>{block.text}</h3>
+              <h3>
+                <CvText runs={block.text} />
+              </h3>
             ) : (
-              <p>{block.text}</p>
+              <p>
+                <CvText runs={block.text} />
+              </p>
             ),
           )}
         </section>
       ))
     }
     <!--/email_off-->
-    <a class="link" href={pathTo('#contact')}
+    <a class="link cv-action" href={pathTo('#contact')}
       >Contact <span class="arrow" aria-hidden="true">→</span></a
     >
   </main>
@@ -81,11 +90,27 @@ const cv = await readCv();
   .cv-actions a {
     text-decoration: none;
   }
-  .cv-download {
+  .cv-action {
+    gap: 14px;
+    padding: 8px 16px;
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 0.65rem 1.25rem;
+    color: var(--muted);
+    text-decoration: none;
+    background: #abcaff05;
+    transition:
+      color 200ms ease,
+      border-color 200ms ease,
+      background-color 200ms ease;
+  }
+  .cv-action .arrow,
+  .cv-download {
     color: var(--accent);
+  }
+  .cv-action:focus-visible {
+    border-color: var(--accent);
+    background-color: #b9def210;
+    color: var(--text);
   }
   .cv-heading {
     padding-bottom: 2.5rem;
@@ -145,6 +170,16 @@ const cv = await readCv();
   }
   li::marker {
     color: var(--accent);
+  }
+  @media (hover: hover) {
+    .cv-action:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background-color: #b9def210;
+    }
+    .cv-download:hover .arrow {
+      transform: translateY(3px);
+    }
   }
   @media (max-width: 767px) {
     .cv {
