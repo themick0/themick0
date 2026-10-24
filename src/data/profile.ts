@@ -16,7 +16,10 @@ export const profile = {
   expertise: ['Full-Stack Engineering', 'DeFi Solutions', 'AI Automation'],
   socials: [
     { label: 'GitHub', href: github },
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/tenshou' },
+    {
+      label: 'LinkedIn',
+      href: 'https://www.linkedin.com/in/peter-mikheev-themick0/',
+    },
     { label: 'Telegram', href: 'https://t.me/peter_mikheev' },
   ],
 };
