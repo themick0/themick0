@@ -75,7 +75,9 @@ const back = pathTo(`#project-${project.slug}`);
       {
         caseStudy.overview && (
           <>
-            <p class="case-story">{caseStudy.overview.story}</p>
+            {caseStudy.overview.story && (
+              <p class="case-story">{caseStudy.overview.story}</p>
+            )}
             <div
               class:list={[
                 'case-details',
@@ -151,12 +153,14 @@ const back = pathTo(`#project-${project.slug}`);
         )
       }
       {
-        caseStudy.approach && (
+        caseStudy.approach?.length && (
           <section class="case-section" aria-labelledby="approach-title">
             <h2 id="approach-title">
               {caseStudy.approachTitle ?? 'What changed'}
             </h2>
-            <p>{caseStudy.approach}</p>
+            {caseStudy.approach.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
           </section>
         )
       }
@@ -342,6 +346,9 @@ const back = pathTo(`#project-${project.slug}`);
   .case-section > p {
     max-width: 65ch;
     color: var(--muted);
+  }
+  .case-section > p + p {
+    margin-top: 1em;
   }
   .result-panel {
     margin-top: 40px;

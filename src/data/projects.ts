@@ -52,7 +52,7 @@ export interface ProjectCaseStudy {
   role?: string;
   scope?: string;
   overview?: {
-    story: string;
+    story?: string;
     images: ProjectScreenshot[];
     video?: ProjectVideo;
     contributions?: { title: string; description: string }[];
@@ -65,7 +65,7 @@ export interface ProjectCaseStudy {
     unit: string;
   };
   approachTitle?: string;
-  approach?: string;
+  approach?: string[];
 }
 
 // Project overviews based on Peter's CV and owner-provided project details.
@@ -84,8 +84,6 @@ export const projects: Project[] = [
         'Peter Mikheev built Ankr Forge’s web interface, sign-in system and built-in wallet, fully replacing an external provider in the live rewards platform.',
       lead: 'Ankr Rewards & Points platform: users complete tasks from partner companies, earn points and receive cryptocurrency rewards.',
       overview: {
-        story:
-          'Forge relied on a costly external provider for user sign-in and embedded wallets. I proposed and built Forge’s own identity system and non-custodial passkey wallet, fully replacing the provider in production. I also developed the platform’s web app and integrated it with the backend services.',
         images: [
           {
             src: forgePlatform,
@@ -131,9 +129,11 @@ export const projects: Project[] = [
           },
         ],
       },
-      approachTitle: 'Delivery and validation',
-      approach:
+      approachTitle: 'Implementation and validation',
+      approach: [
+        'Forge relied on a costly external provider for user sign-in and embedded wallets. I proposed and built Forge’s own identity system and non-custodial passkey wallet, fully replacing the provider in production. I also developed the platform’s web app and integrated it with the backend services.',
         'I delivered features in stages against clear acceptance criteria. Validation combined cross-agent reviews, security-focused reviews and automated tests with end-to-end coverage of critical flows.',
+      ],
     },
   },
   {

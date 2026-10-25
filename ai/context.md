@@ -53,7 +53,7 @@ The production domain is `https://themick0.com/`. Deployment uses GitHub Actions
 
 ## Case pages
 
-Forge introduces the rewards platform, the replacement of an external identity and wallet provider, and Peter's implementation work. It uses a gallery, three contribution blocks named Identity service, Smart wallet, and Frontend app, and a Delivery and validation section. Keep the introduction readable and implementation details in the supporting blocks.
+Forge introduces the rewards platform, followed by a gallery and three contribution blocks named Identity service, Smart wallet, and Frontend app. The Implementation and validation section below them describes the replacement of an external identity and wallet provider, Peter's implementation work, and the delivery and validation process in separate paragraphs.
 
 Neuraverse describes the React/CSS game-layer rebuild with Pixi.js and its production release in two weeks. Its introduction is followed by a full-width gallery containing a gameplay recording and eight screenshots. The supplemental external link is labeled Neura website.
 
