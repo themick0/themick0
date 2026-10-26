@@ -8,8 +8,8 @@ This document covers the public website and its maintenance. Optional local work
 
 - **Peter Mikheev**, **themick0**, **Senior Software Engineer**.
 - The website supports employment opportunities and project collaboration with founders, product teams, engineering leaders, and recruiters.
-- The home page presents **Full-Stack Engineering**, **DeFi Solutions**, and **AI Automation**.
-- Public experience includes more than eight years in software engineering, React, TypeScript, Node.js, backend APIs, SDKs, and production DeFi, wallet, and identity integrations.
+- The home page presents **Full-Stack Engineering**, **Web3 Solutions**, and **AI Automation**.
+- Public experience includes more than eight years in software engineering, React, TypeScript, Node.js, backend APIs, SDKs, and production Web3, wallet, and identity integrations.
 - Profile details, contacts, and the CV link live in [src/data/profile.ts](../src/data/profile.ts). Project descriptions and destinations live in [src/data/projects.ts](../src/data/projects.ts).
 
 ## Content rules

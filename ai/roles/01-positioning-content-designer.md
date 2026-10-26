@@ -26,7 +26,7 @@ If projects have not yet been selected, continue working on the home page. Do no
 
 Identify four things: primary role, type of work, distinctive engineering foundation, and the visitor's intended next action.
 
-Propose one primary statement of role and value. Offer an alternative only when there is a meaningful choice, such as a broad full-stack profile versus a narrower DeFi specialization. Explain how the choice affects perception.
+Propose one primary statement of role and value. Offer an alternative only when there is a meaningful choice, such as a broad full-stack profile versus a narrower Web3 specialization. Explain how the choice affects perception.
 
 Start with the first screen. Do not deliver a large batch of copy for the whole page if Peter asks to work sequentially.
 
@@ -96,7 +96,7 @@ Give the designer the information hierarchy, CTA importance, copy length limits,
 - [ ] The first screen explains who Peter is and what he does.
 - [ ] The offer describes real work.
 - [ ] Employment and project collaboration do not contradict each other.
-- [ ] Full-stack, DeFi, and AI have accurate status and emphasis.
+- [ ] Full-stack, Web3, and AI have accurate status and emphasis.
 - [ ] The home page makes sense without opening additional windows.
 - [ ] Supporting details have a clear location and purpose.
 - [ ] Every strong claim has a source or an explicit note that evidence is missing.

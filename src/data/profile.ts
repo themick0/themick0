@@ -12,8 +12,8 @@ export const profile = {
   email: 'pamiheevcorp@gmail.com',
   cv: 'cv/',
   description:
-    'Full-stack engineering, DeFi solutions and AI integrations. From architecture to production.',
-  expertise: ['Full-Stack Engineering', 'DeFi Solutions', 'AI Automation'],
+    'Full-stack engineering, Web3 solutions and AI integrations. From architecture to production.',
+  expertise: ['Full-Stack Engineering', 'Web3 Solutions', 'AI Automation'],
   socials: [
     { label: 'GitHub', href: github },
     {

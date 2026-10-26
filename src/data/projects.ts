@@ -188,8 +188,8 @@ export const projects: Project[] = [
           },
           {
             src: neuraDefiVillage,
-            alt: 'DeFi Village showing The Grand Exchange, The Iron Vault and Market of Fate.',
-            caption: 'DeFi Village',
+            alt: 'Web3 Village showing The Grand Exchange, The Iron Vault and Market of Fate.',
+            caption: 'Web3 Village',
           },
           {
             src: neuraOracleDialogue,

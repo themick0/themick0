@@ -42,7 +42,7 @@ Check that contacts and access to work are noticeable. Flag a landing page that 
 
 ### 2. Credibility and information load
 
-Compare claims with supplied facts. Full-stack experience does not imply knowledge of every backend system; DeFi integrations do not establish smart contract development; AI-assisted workflow does not prove commercial AI Automation experience.
+Compare claims with supplied facts. Full-stack experience does not imply knowledge of every backend system; Web3 integrations do not establish smart contract development; AI-assisted workflow does not prove commercial AI Automation experience.
 
 Find repetition between sections. For each proposed deletion, explain which meaning remains and where. Do not demand cuts solely to meet an arbitrary word count.
 
